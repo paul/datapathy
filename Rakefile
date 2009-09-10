@@ -10,6 +10,9 @@ begin
     gem.homepage = "http://github.com/paul/datapathy"
     gem.authors = ["Paul Sadauskas"]
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+
+    gem.dependency "activesupport"
+    gem.dependency "uuidtools"
   end
 
 rescue LoadError
