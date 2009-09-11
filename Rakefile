@@ -11,8 +11,8 @@ begin
     gem.authors = ["Paul Sadauskas"]
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
 
-    gem.add_dependency "activesupport"
-    gem.add_dependency "uuidtools"
+    gem.add_dependency "activesupport", "~> 3.0"
+    gem.add_dependency "uuidtools", "~> 2.0"
   end
 
 rescue LoadError
@@ -23,6 +23,7 @@ require 'spec/rake/spectask'
 Spec::Rake::SpecTask.new(:spec) do |spec|
   spec.libs << 'lib' << 'spec'
   spec.spec_files = FileList['spec/**/*_spec.rb']
+  spec.spec_opts << ['--options', 'spec/spec.opts']
 end
 
 Spec::Rake::SpecTask.new(:rcov) do |spec|
