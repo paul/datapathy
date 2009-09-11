@@ -12,6 +12,10 @@ module Datapathy
     @adapter ||= Datapathy::Adapters::MemoryAdapter.new
   end
 
+  def self.default_adapter=(adapter)
+    @adapter = adapter
+  end
+
 end
 
 require File.join(File.dirname(__FILE__), 'datapathy/model')
