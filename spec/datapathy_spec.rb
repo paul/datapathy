@@ -16,11 +16,20 @@ describe "Datapathy" do
   end
 
   it 'should be able to store and retrieve a record' do
-    my_model = MyModel.create(:id => UUIDTools::UUID.random_create,
+    my_model = MyModel.create(:id => UUIDTools::UUID.random_create.to_s,
                               :name => "Paul")
 
     other = MyModel[my_model.id]
     my_model.id.should == other.id
     my_model.name.should == other.name
   end
+
+  it 'should be able to find things' do
+    my_model = MyModel.create(:id => UUIDTools::UUID.random_create.to_s,
+                              :name => "Paul")
+
+    other = MyModel.detect { |r| r.name == "Paul" }
+    other.id.should == my_model.id
+  end
+
 end

@@ -12,15 +12,19 @@ module Datapathy::Model
   end
 
   def persisted_attributes
-    persisted_attributes = {}
-    self.class.persisted_attributes.each do |name|
-      persisted_attributes[name] = self.send(:"#{name}")
+    returning({}) do |attrs|
+      self.class.persisted_attributes.each do |name|
+        attrs[name] = self.send(:"#{name}")
+      end
     end
-    persisted_attributes
   end
 
   def key
     self.id
+  end
+
+  def model_name
+    self.class.model_name
   end
 
   module ClassMethods
@@ -43,20 +47,40 @@ module Datapathy::Model
       @persisted_attributes ||= []
     end
 
-    def create(attributes)
-      me = new(attributes)
-      adapter.create([me])
-      me
+    def create(*attributes)
+      resources = attributes.map do |attrs|
+        me = new(attrs)
+        adapter.create([me])
+        me
+      end
+      attributes.size == 1 ? resources.first : resources
     end
 
     def adapter
       @adapter || Datapathy.default_adapter
     end
 
-    def [](key)
-      new(adapter.read(key))
+    def key
+      :id
     end
 
+    def [](key)
+      query = Datapathy::Query.new(self)
+      query.add_condition(self.key, :eql, key)
+      new(adapter.read(query))
+    end
+
+    def detect(&blk) 
+      query = Datapathy::Query.new(self, &blk)
+
+      adapter.read(query).map do |r|
+        new(r)
+      end.first
+    end
+
+    def model_name
+      self.to_s.underscore
+    end
 
   end
 

@@ -11,8 +11,8 @@ begin
     gem.authors = ["Paul Sadauskas"]
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
 
-    gem.dependency "activesupport"
-    gem.dependency "uuidtools"
+    gem.add_dependency "activesupport"
+    gem.add_dependency "uuidtools"
   end
 
 rescue LoadError
