@@ -14,7 +14,6 @@ module Datapathy
 
 end
 
-
 require File.join(File.dirname(__FILE__), 'datapathy/model')
 require File.join(File.dirname(__FILE__), 'datapathy/query')
 require File.join(File.dirname(__FILE__), 'datapathy/adapters/abstract_adapter')

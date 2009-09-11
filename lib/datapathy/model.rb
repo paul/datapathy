@@ -27,6 +27,10 @@ module Datapathy::Model
     self.class.model_name
   end
 
+  def ==(other)
+    self.key == other.key
+  end
+
   module ClassMethods
 
     def persists(*args)
@@ -68,6 +72,13 @@ module Datapathy::Model
       query = Datapathy::Query.new(self)
       query.add_condition(self.key, :eql, key)
       new(adapter.read(query))
+    end
+
+    def all
+      query = Datapathy::Query.new(self)
+      adapter.read(query).map do |r|
+        new(r)
+      end
     end
 
     def detect(&blk) 

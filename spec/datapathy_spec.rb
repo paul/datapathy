@@ -1,14 +1,16 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
+class MyModel
+  include Datapathy::Model
+
+  persists :id
+  persists :name
+end
+
 describe "Datapathy" do
 
-  before do
-    class MyModel
-      include Datapathy::Model
-
-      persists :id
-      persists :name
-    end unless defined?(MyModel)
+  def uuid
+    UUIDTools::UUID.random_create.to_s
   end
 
   it 'should have attributes' do
@@ -16,20 +18,33 @@ describe "Datapathy" do
   end
 
   it 'should be able to store and retrieve a record' do
-    my_model = MyModel.create(:id => UUIDTools::UUID.random_create.to_s,
+    my_model = MyModel.create(:id => uuid,
                               :name => "Paul")
 
     other = MyModel[my_model.id]
-    my_model.id.should == other.id
-    my_model.name.should == other.name
+    other.should == my_model
+    other.id.should == my_model.id
+    other.name.should == my_model.name
+  end
+
+  it 'should be able to retrive all things' do
+    a = MyModel.create(:id => uuid,
+                       :name => "George")
+    b = MyModel.create(:id => uuid,
+                       :name => "John")
+
+    results = MyModel.all
+
+    results.should include(a)
+    results.should include(b)
   end
 
   it 'should be able to find things' do
     my_model = MyModel.create(:id => UUIDTools::UUID.random_create.to_s,
-                              :name => "Paul")
+                              :name => "Ringo")
 
-    other = MyModel.detect { |r| r.name == "Paul" }
-    other.id.should == my_model.id
+    other = MyModel.detect { |r| r.name == "Ringo" }
+    other.should == my_model
   end
 
 end
