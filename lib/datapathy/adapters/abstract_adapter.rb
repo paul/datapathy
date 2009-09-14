@@ -11,7 +11,7 @@ module Datapathy::Adapters
       raise NotImplementedError, "#{self.class}#create not implemented"
     end
 
-    def read(key_or_query)
+    def read(query)
       raise NotImplementedError, "#{self.class}#read not implemented"
     end
 

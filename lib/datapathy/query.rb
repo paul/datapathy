@@ -70,7 +70,7 @@ class Datapathy::Query
 
     def matches?(record)
       value = if record.is_a?(Hash)
-                record[attribute]
+                record[attribute.to_s]
               else
                 record.send(attribute)
               end
