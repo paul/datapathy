@@ -36,13 +36,14 @@ module Datapathy::Model
     def persists(*args)
       args.each do |atr|
         persisted_attributes << atr
+        ivar=atr.to_s.gsub(/\?$/,'')
 
         define_method(atr) do  
-          instance_variable_get("@#{atr}")
+          instance_variable_get("@#{ivar}")
         end        
 
         define_method("#{atr}=") do |val| 
-          instance_variable_set("@#{atr}",val)
+          instance_variable_set("@#{ivar}",val)
         end
       end
     end
