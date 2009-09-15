@@ -6,8 +6,6 @@ module Datapathy::Adapters
 
     def initialize(options = {})
       super
-
-      @store = {}
     end
 
     def create(resources)
@@ -27,8 +25,8 @@ module Datapathy::Adapters
     def update(attributes, query_or_collection)
       if query_or_collection.is_a?(Datapathy::Query)
         query = query_or_collection
-        model = query.model
-        key   = model.key
+        key   = query.model.key.to_s
+
         attributes = attributes.stringify_keys
         read(query).each do |record|
           record.merge!(attributes)
@@ -36,8 +34,26 @@ module Datapathy::Adapters
         end
       else
         collection = query_or_collection
+
         collection.each do |resource|
           records_for(resource)[resource.key] = resource.persisted_attributes.stringify_keys
+        end
+      end
+    end
+
+    def delete(query_or_collection)
+      if query_or_collection.is_a?(Datapathy::Query)
+        query = query_or_collection
+        key = query.model.key.to_s
+
+        read(query).each do |record|
+          records_for(query).delete(record[key])
+        end
+      else
+        collection = query_or_collection
+
+        collection.each do |resource|
+          records_for(resource).delete(resource.key)
         end
       end
     end

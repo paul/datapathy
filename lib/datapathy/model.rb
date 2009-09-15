@@ -32,6 +32,10 @@ module Datapathy::Model
     end
   end
 
+  def delete
+    self.class.adapter.delete([self])
+  end
+
   def key
     self.id
   end
@@ -90,6 +94,12 @@ module Datapathy::Model
       end
     end
 
+    def delete(&blk)
+      query = Datapathy::Query.new(model, &blk)
+
+      adapter.delete(query)
+    end
+
     def adapter
       @adapter || Datapathy.default_adapter
     end
@@ -101,7 +111,8 @@ module Datapathy::Model
     def [](key)
       query = Datapathy::Query.new(model)
       query.add_condition(self.key, :eql, key)
-      new(adapter.read(query))
+      record = adapter.read(query)
+      new(record) if record
     end
 
     def all
