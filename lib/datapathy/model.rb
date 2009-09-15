@@ -5,10 +5,14 @@ module Datapathy::Model
     klass.extend(ClassMethods)
   end
 
+  attr_accessor :new_record
+
   def initialize(attributes = {})
     attributes.each do |name, value|
       self.send(:"#{name}=", value)
     end
+
+    @new_record = true
   end
 
   def persisted_attributes
@@ -20,7 +24,12 @@ module Datapathy::Model
   end
 
   def save
-    self.class.adapter.create([self])
+    if new_record?
+      self.class.adapter.create([self])
+      @new_record = false
+    else
+      self.class.adapter.update(persisted_attributes, [self])
+    end
   end
 
   def key
@@ -35,6 +44,10 @@ module Datapathy::Model
     self.key == other.key
   end
 
+  def new_record?
+    @new_record
+  end
+
   module ClassMethods
 
     def persists(*args)
@@ -42,13 +55,15 @@ module Datapathy::Model
         persisted_attributes << atr
         ivar=atr.to_s.gsub(/\?$/,'')
 
-        define_method(atr) do  
-          instance_variable_get("@#{ivar}")
-        end        
+        class_eval <<-EVAL
+          def #{atr}          # def id
+            @#{ivar}          #   @id
+          end                 # end
 
-        define_method("#{atr}=") do |val| 
-          instance_variable_set("@#{ivar}",val)
-        end
+          def #{atr}=(val)    # def id=(val)
+            @#{ivar} = val    #   @id = val
+          end                 # end
+        EVAL
       end
     end
 
@@ -61,9 +76,18 @@ module Datapathy::Model
       resources = attributes.map do |attrs|
         me = new(attrs)
         adapter.create([me])
+        me.new_record = false
         me
       end
       attributes.size == 1 ? resources.first : resources
+    end
+
+    def update(attributes, &blk)
+      query = Datapathy::Query.new(model, &blk)
+
+      adapter.update(attributes, query).map do |r|
+        new(r)
+      end
     end
 
     def adapter

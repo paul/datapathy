@@ -24,9 +24,21 @@ module Datapathy::Adapters
       end
     end
 
-    def update(attributes, collection)
-      collection.each do |resource|
-        records_for(resource)[resource.key] = resource.persisted_attributes.stringify_keys
+    def update(attributes, query_or_collection)
+      if query_or_collection.is_a?(Datapathy::Query)
+        query = query_or_collection
+        model = query.model
+        key   = model.key
+        attributes = attributes.stringify_keys
+        read(query).each do |record|
+          record.merge!(attributes)
+          records_for(query)[record[key]] = record
+        end
+      else
+        collection = query_or_collection
+        collection.each do |resource|
+          records_for(resource)[resource.key] = resource.persisted_attributes.stringify_keys
+        end
       end
     end
 

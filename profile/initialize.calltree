@@ -1,0 +1,62 @@
+events: process_time
+
+fl=/home/rando/development/api/datapathy/(eval)
+fn=DatapathyModel::text=
+5 110000
+
+fl=/home/rando/development/api/datapathy/(eval)
+fn=DatapathyModel::title=
+5 60000
+
+fl=/home/rando/development/api/datapathy/(eval)
+fn=DatapathyModel::id=
+5 80000
+
+fl=/home/rando/development/api/datapathy/lib/datapathy/model.rb
+fn=Datapathy::Model::initialize
+8 390000
+cfl=/home/rando/development/api/datapathy/(eval)
+cfn=DatapathyModel::id=
+calls=100000 12
+12 80000
+cfl=/home/rando/development/api/datapathy/(eval)
+cfn=DatapathyModel::title=
+calls=100000 13
+13 60000
+cfl=/home/rando/development/api/datapathy/(eval)
+cfn=DatapathyModel::text=
+calls=100000 14
+14 110000
+
+fl=/home/rando/development/api/datapathy/ruby_runtime
+fn=<Class::BasicObject>::allocate
+0 50000
+
+fl=/home/rando/development/api/datapathy/ruby_runtime
+fn=Class::new
+0 120000
+cfl=/home/rando/development/api/datapathy/ruby_runtime
+cfn=<Class::BasicObject>::allocate
+calls=100000 19
+19 50000
+cfl=/home/rando/development/api/datapathy/lib/datapathy/model.rb
+cfn=Datapathy::Model::initialize
+calls=100000 19
+19 640000
+
+fl=/home/rando/development/api/datapathy/ruby_runtime
+fn=Integer::times
+0 80000
+cfl=/home/rando/development/api/datapathy/ruby_runtime
+cfn=Class::new
+calls=100000 19
+19 810000
+
+fl=/home/rando/development/api/datapathy/profile/initialize.rb
+fn=Global::[No method]
+18 0
+cfl=/home/rando/development/api/datapathy/ruby_runtime
+cfn=Integer::times
+calls=1 18
+18 890000
+
