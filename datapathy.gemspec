@@ -6,35 +6,50 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Paul Sadauskas"]
-  s.date = %q{2009-09-11}
+  s.date = %q{2009-09-15}
   s.email = %q{psadauskas@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
-     "README.rdoc"
+     "README.mkd"
   ]
   s.files = [
     ".document",
      ".gitignore",
      "LICENSE",
-     "README.rdoc",
+     "README.mkd",
      "Rakefile",
      "VERSION",
+     "benchmarks/initialize.rb",
+     "datapathy.gemspec",
      "lib/datapathy.rb",
      "lib/datapathy/adapters/abstract_adapter.rb",
      "lib/datapathy/adapters/memory_adapter.rb",
      "lib/datapathy/model.rb",
      "lib/datapathy/query.rb",
+     "profile/initialize.calltree",
+     "profile/initialize.rb",
+     "spec/create_spec.rb",
      "spec/datapathy_spec.rb",
-     "spec/spec_helper.rb"
+     "spec/delete_spec.rb",
+     "spec/read_spec.rb",
+     "spec/spec.opts",
+     "spec/spec_helper.rb",
+     "spec/support/models.rb",
+     "spec/update_spec.rb"
   ]
   s.homepage = %q{http://github.com/paul/datapathy}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.5}
-  s.summary = %q{TODO}
+  s.summary = %q{The stupid-simple ORM}
   s.test_files = [
-    "spec/spec_helper.rb",
-     "spec/datapathy_spec.rb"
+    "spec/update_spec.rb",
+     "spec/read_spec.rb",
+     "spec/spec_helper.rb",
+     "spec/datapathy_spec.rb",
+     "spec/support/models.rb",
+     "spec/create_spec.rb",
+     "spec/delete_spec.rb"
   ]
 
   if s.respond_to? :specification_version then

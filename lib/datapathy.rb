@@ -8,6 +8,11 @@ require 'active_support/core_ext/string/inflections'
 
 module Datapathy
 
+  VERSION = "0.1.0"
+  def self.version
+    VERSION
+  end
+
   def self.default_adapter
     @adapter ||= Datapathy::Adapters::MemoryAdapter.new
   end
