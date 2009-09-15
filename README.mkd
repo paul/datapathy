@@ -1,0 +1,19 @@
+datapathy
+=========
+
+The stupid-simple ORM
+
+Roadmap
+=======
+
+ * 0.1.0 - CRUD API in adapters & models completed
+ * 0.2.0 - Lazy Collections
+ * 0.3.0 - Validations & Errors
+
+
+
+
+Copyright
+=========
+
+Copyright (c) 2009 Paul Sadauskas. See LICENSE for details.

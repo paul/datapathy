@@ -19,12 +19,16 @@ module Datapathy::Model
     end
   end
 
+  def save
+    self.class.adapter.create([self])
+  end
+
   def key
     self.id
   end
 
-  def model_name
-    self.class.model_name
+  def model
+    self.class
   end
 
   def ==(other)
@@ -51,7 +55,8 @@ module Datapathy::Model
       @persisted_attributes ||= []
     end
 
-    def create(*attributes)
+    def create(attributes)
+      attributes = [attributes] if attributes.is_a?(Hash)
       resources = attributes.map do |attrs|
         me = new(attrs)
         adapter.create([me])
@@ -69,28 +74,32 @@ module Datapathy::Model
     end
 
     def [](key)
-      query = Datapathy::Query.new(self)
+      query = Datapathy::Query.new(model)
       query.add_condition(self.key, :eql, key)
       new(adapter.read(query))
     end
 
     def all
-      query = Datapathy::Query.new(self)
+      query = Datapathy::Query.new(model)
       adapter.read(query).map do |r|
         new(r)
       end
     end
 
     def detect(&blk) 
-      query = Datapathy::Query.new(self, &blk)
+      self.select(&blk).first
+    end
+
+    def select(&blk)
+      query = Datapathy::Query.new(model, &blk)
 
       adapter.read(query).map do |r|
         new(r)
-      end.first
+      end
     end
 
-    def model_name
-      self.to_s.underscore
+    def model
+      self
     end
 
   end

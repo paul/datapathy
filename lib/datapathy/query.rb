@@ -33,13 +33,9 @@ class Datapathy::Query
   end
 
   def method_missing(method_name, *args)
-    #if model.respond_to?(method_name)
-      returning Condition.new(method_name) do |condition|
-        @conditions << condition
-      end
-    #else
-    #  raise "Model #{model.to_s} does not have a #{method_name} method to search on"
-    #end
+    returning Condition.new(method_name) do |condition|
+      @conditions << condition
+    end
   end
 
   class Condition

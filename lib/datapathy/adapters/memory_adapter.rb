@@ -1,3 +1,5 @@
+require 'active_support/core_ext/hash/keys'
+
 module Datapathy::Adapters
 
   class MemoryAdapter < AbstractAdapter
@@ -10,22 +12,34 @@ module Datapathy::Adapters
 
     def create(resources)
       resources.each do |resource|
-        records_for(resource)[resource.key] = resource.persisted_attributes
+        records_for(resource)[resource.key] = resource.persisted_attributes.stringify_keys
       end
     end
 
     def read(query)
       if query.key_lookup?
-        records_for(query.model)[query.key]
+        records_for(query)[query.key]
       else
-        query.filter_records(records_for(query.model).values)
+        query.filter_records(records_for(query).values)
       end
     end
 
-    protected
+    def update(attributes, collection)
+      collection.each do |resource|
+        records_for(resource)[resource.key] = resource.persisted_attributes.stringify_keys
+      end
+    end
 
-    def records_for(resource)
-      @store[resource.model_name] ||= {}
+    def records_for(resource_or_query)
+      datastore[resource_or_query.model]
+    end
+
+    def datastore
+      @datastore ||= Hash.new { |h,k| h[k] = {} }
+    end
+
+    def clear!
+      @datastore = nil
     end
 
   end
