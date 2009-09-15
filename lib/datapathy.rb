@@ -25,6 +25,7 @@ end
 
 require File.join(File.dirname(__FILE__), 'datapathy/model')
 require File.join(File.dirname(__FILE__), 'datapathy/query')
+require File.join(File.dirname(__FILE__), 'datapathy/collection')
 require File.join(File.dirname(__FILE__), 'datapathy/adapters/abstract_adapter')
 require File.join(File.dirname(__FILE__), 'datapathy/adapters/memory_adapter')
 

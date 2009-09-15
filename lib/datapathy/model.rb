@@ -115,24 +115,18 @@ module Datapathy::Model
       new(record) if record
     end
 
-    def all
-      query = Datapathy::Query.new(model)
-      adapter.read(query).map do |r|
-        new(r)
-      end
+    def all(&blk)
+      query = Datapathy::Query.new(model, &blk)
+      Datapathy::Collection.new(query)
     end
+    alias select all
+    alias find_all all
 
     def detect(&blk) 
       self.select(&blk).first
     end
-
-    def select(&blk)
-      query = Datapathy::Query.new(model, &blk)
-
-      adapter.read(query).map do |r|
-        new(r)
-      end
-    end
+    alias first detect
+    alias find detect
 
     def model
       self

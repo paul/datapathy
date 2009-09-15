@@ -12,7 +12,6 @@ begin
     gem.homepage = "http://github.com/paul/datapathy"
     gem.authors = ["Paul Sadauskas"]
     gem.version = Datapathy.version
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
 
     gem.add_dependency "activesupport", "~> 3.0"
     gem.add_dependency "uuidtools", "~> 2.0"
@@ -36,6 +35,8 @@ Spec::Rake::SpecTask.new(:rcov) do |spec|
 end
 
 task :default => :spec
+
+task :gem => :build
 
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|

@@ -1,7 +1,8 @@
 
 class Datapathy::Query
 
-  attr_reader :model, :conditions
+  attr_reader :model, :conditions,
+              :offset, :count
 
   def initialize(model, &blk)
     @model = model
@@ -13,6 +14,13 @@ class Datapathy::Query
     @conditions << Condition.new(*args)
   end
 
+  def add(&blk)
+    yield self
+  end
+
+  def add_limit(offset, count)
+    @offset, @count = offset, count
+  end
 
   def key_lookup?
     @conditions.size == 1 &&
@@ -25,11 +33,23 @@ class Datapathy::Query
   end
 
   def filter_records(records)
+    records = select_records(records)
+    records = limit_records(records)
+
+    records
+  end
+
+  def select_records(records)
     records.select do |record|
       @conditions.all? do |condition|
         condition.matches?(record)
       end
     end
+  end
+
+  def limit_records(records)
+    return records unless @offset || @count
+    records.slice(@offset || 0, @count)
   end
 
   def method_missing(method_name, *args)
