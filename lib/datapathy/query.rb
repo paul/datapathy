@@ -7,7 +7,7 @@ class Datapathy::Query
   def initialize(model, &blk)
     @model = model
     @conditions = []
-    yield self if block_given?
+    add(&blk) if block_given?
   end
 
   def add_condition(*args)
@@ -15,7 +15,11 @@ class Datapathy::Query
   end
 
   def add(&blk)
-    yield self
+    begin
+      yield self
+    rescue NoMethodError => e
+      raise NoMethodError, "no attribute `#{e.name}' on #{model} to be queried"
+    end
   end
 
   def add_limit(offset, count)
@@ -53,8 +57,12 @@ class Datapathy::Query
   end
 
   def method_missing(method_name, *args)
-    returning Condition.new(method_name) do |condition|
-      @conditions << condition
+    if model.instance_methods.include?(method_name.to_s)
+      returning Condition.new(method_name) do |condition|
+        @conditions << condition
+      end
+    else 
+      super
     end
   end
 
