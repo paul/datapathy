@@ -15,11 +15,11 @@ module Datapathy::Adapters
       raise NotImplementedError, "#{self.class}#read not implemented"
     end
 
-    def update(attributes, collection)
+    def update(attributes, query_or_collection)
       raise NotImplementedError, "#{self.class}#update not implemented"
     end
 
-    def delete(collection)
+    def delete(query_or_collection)
       raise NotImplementedError, "#{self.class}#delete not implemented"
     end
 

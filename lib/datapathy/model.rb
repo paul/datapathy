@@ -57,16 +57,17 @@ module Datapathy::Model
     def persists(*args)
       args.each do |atr|
         persisted_attributes << atr
-        ivar=atr.to_s.gsub(/\?$/,'')
+        name=atr.to_s.gsub(/\?$/,'')
 
         class_eval <<-EVAL
-          def #{atr}          # def id
-            @#{ivar}          #   @id
-          end                 # end
+          def #{name}          # def id
+            @#{name}           #   @id
+          end                  # end
+          alias #{name}? #{name}
 
-          def #{atr}=(val)    # def id=(val)
-            @#{ivar} = val    #   @id = val
-          end                 # end
+          def #{name}=(val)    # def id=(val)
+            @#{name} = val     #   @id = val
+          end                  # end
         EVAL
       end
     end
@@ -78,13 +79,33 @@ module Datapathy::Model
     def create(attributes)
       attributes = [attributes] if attributes.is_a?(Hash)
       resources = attributes.map do |attrs|
-        me = new(attrs)
-        adapter.create([me])
-        me.new_record = false
-        me
+        new(attrs)
       end
-      attributes.size == 1 ? resources.first : resources
+      adapter.create(resources)
+      resources.each { |r| r.new_record = false }
+
+      resources.size == 1 ? resources.first : resources
     end
+
+    def [](key)
+      query = Datapathy::Query.new(model)
+      query.add_condition(self.key, :eql, key)
+      record = adapter.read(query)
+      new(record) if record
+    end
+
+    def select(&blk)
+      query = Datapathy::Query.new(model, &blk)
+      Datapathy::Collection.new(query)
+    end
+    alias all select
+    alias find_all select
+
+    def detect(&blk) 
+      self.select(&blk).first
+    end
+    alias first detect
+    alias find detect
 
     def update(attributes, &blk)
       query = Datapathy::Query.new(model, &blk)
@@ -100,33 +121,13 @@ module Datapathy::Model
       adapter.delete(query)
     end
 
-    def adapter
-      @adapter || Datapathy.default_adapter
-    end
-
     def key
       :id
     end
 
-    def [](key)
-      query = Datapathy::Query.new(model)
-      query.add_condition(self.key, :eql, key)
-      record = adapter.read(query)
-      new(record) if record
+    def adapter
+      @adapter || Datapathy.default_adapter
     end
-
-    def all(&blk)
-      query = Datapathy::Query.new(model, &blk)
-      Datapathy::Collection.new(query)
-    end
-    alias select all
-    alias find_all all
-
-    def detect(&blk) 
-      self.select(&blk).first
-    end
-    alias first detect
-    alias find detect
 
     def model
       self

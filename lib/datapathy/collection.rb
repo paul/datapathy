@@ -9,10 +9,13 @@ class Datapathy::Collection
   def detect(&blk)
     select(&blk).first
   end
+  alias find detect
 
   def select(&blk)
     query.add(&blk)
+    self
   end
+  alias find_all select
 
   def loaded?
     @elements
