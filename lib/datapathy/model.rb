@@ -57,18 +57,26 @@ module Datapathy::Model
     def persists(*args)
       args.each do |atr|
         persisted_attributes << atr
-        name=atr.to_s.gsub(/\?$/,'')
+        ivar=:"@#{atr.to_s.gsub(/\?$/,'')}"
 
-        class_eval <<-EVAL
-          def #{name}          # def id
-            @#{name}           #   @id
-          end                  # end
-          alias #{name}? #{name}
+        define_method(atr) do
+          instance_variable_get(ivar)
+        end
 
-          def #{name}=(val)    # def id=(val)
-            @#{name} = val     #   @id = val
-          end                  # end
-        EVAL
+        define_method("#{atr}=") do |val|
+          instance_variable_set(ivar, val)
+        end
+          
+        # class_eval <<-EVAL
+        #   def #{name}          # def id
+        #     @#{name}           #   @id
+        #   end                  # end
+        #   alias #{name}? #{name}
+
+        #   def #{name}=(val)    # def id=(val)
+        #     @#{name} = val     #   @id = val
+        #   end                  # end
+        # EVAL
       end
     end
 
@@ -89,7 +97,7 @@ module Datapathy::Model
 
     def [](key)
       query = Datapathy::Query.new(model)
-      query.add_condition(self.key, :eql, key)
+      query.add_condition(self.key, :==, key)
       record = adapter.read(query)
       new(record) if record
     end

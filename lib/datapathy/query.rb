@@ -29,21 +29,24 @@ class Datapathy::Query
   def key_lookup?
     @conditions.size == 1 &&
       @conditions.first.attribute == model.key &&
-      @conditions.first.operator == :eql
+      @conditions.first.operator == :==
   end
 
   def key
     @conditions.first.operand
   end
 
+  # Used in adapters to filter hashes of records.
+  # The keys of the hashes must be symbols representing 
+  # attribute names!
   def filter_records(records)
-    records = select_records(records)
+    records = match_records(records)
     records = limit_records(records)
 
     records
   end
 
-  def select_records(records)
+  def match_records(records)
     records.select do |record|
       @conditions.all? do |condition|
         condition.matches?(record)
@@ -57,7 +60,7 @@ class Datapathy::Query
   end
 
   def method_missing(method_name, *args)
-    if model.instance_methods.include?(method_name.to_s)
+    if model.instance_methods.include?(method_name)
       returning Condition.new(method_name) do |condition|
         @conditions << condition
       end
@@ -92,12 +95,7 @@ class Datapathy::Query
     end
 
     def matches?(record)
-      value = if record.is_a?(Hash)
-                record[attribute.to_s]
-              else
-                record.send(attribute)
-              end
-
+      value = record[attribute]
       value.send(operator, operand)
     end
   end
