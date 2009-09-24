@@ -13,7 +13,7 @@ begin
     gem.authors = ["Paul Sadauskas"]
     gem.version = Datapathy.version
 
-    gem.add_dependency "activesupport", "~> 3.0"
+    gem.add_dependency "activesupport", "~> 3.0.pre"
     gem.add_dependency "uuidtools", "~> 2.0"
   end
 

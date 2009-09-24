@@ -9,7 +9,9 @@ module Datapathy::Model
 
   def initialize(attributes = {})
     attributes.each do |name, value|
-      self.send(:"#{name}=", value)
+      #ivar = "@#{name.to_s.gsub(/\?$/, '')}"
+      #instance_variable_set(ivar, value)
+      send("#{name}=", value)
     end
 
     @new_record = true
