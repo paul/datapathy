@@ -1,17 +1,20 @@
+require 'active_support/core_ext/class/inheritable_attributes'
+require 'active_model/validations'
 
 module Datapathy::Model
 
   def self.included(klass)
     klass.extend(ClassMethods)
+    klass.send(:include, ActiveModel::Validations)
   end
 
   attr_accessor :new_record
 
   def initialize(attributes = {})
     attributes.each do |name, value|
-      #ivar = "@#{name.to_s.gsub(/\?$/, '')}"
-      #instance_variable_set(ivar, value)
-      send("#{name}=", value)
+      ivar = "@#{name.to_s.gsub(/\?$/, '')}"
+      instance_variable_set(ivar, value)
+      #send("#{name}=", value)
     end
 
     @new_record = true
@@ -22,6 +25,13 @@ module Datapathy::Model
       self.class.persisted_attributes.each do |name|
         attrs[name] = self.send(:"#{name}")
       end
+    end
+  end
+
+  def merge!(attributes)
+    attributes.each do |name, value|
+      ivar = "@#{name.to_s.gsub(/\?$/, '')}"
+      instance_variable_set(ivar, value)
     end
   end
 
@@ -47,7 +57,7 @@ module Datapathy::Model
   end
 
   def ==(other)
-    self.key == other.key
+    self.key == other && other.key
   end
 
   def new_record?

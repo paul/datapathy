@@ -60,8 +60,7 @@ class Datapathy::Query
   end
 
   def method_missing(method_name, *args)
-    #if model.instance_methods.include?(method_name)
-    if model.respond_to?(method_name)
+    if model.respond_to?(method_name.to_s) || model.instance_methods.include?(method_name.to_s)
       returning Condition.new(method_name) do |condition|
         @conditions << condition
       end
