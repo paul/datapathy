@@ -49,7 +49,11 @@ module Datapathy::Model
   end
 
   def key
-    self.id
+    send(self.class.key)
+  end
+
+  def key=(value)
+    send(:"#{self.class.key}=", value)
   end
 
   def model

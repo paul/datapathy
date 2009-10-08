@@ -2,8 +2,22 @@ class Datapathy::Collection
 
   attr_reader :query, :model
 
-  def initialize(query)
+  def initialize(query, elements = nil)
     @query, @model = query, query.model
+    @elements = elements unless elements.nil?
+  end
+
+  def create(attributes)
+    attributes = [attributes] if attributes.is_a?(Hash)
+    resources = attributes.map do |attrs|
+      model.new(attrs)
+    end
+
+    collection = self.class.new(query, resources)
+    query.model.adapter.create(collection)
+    resources.each { |r| r.new_record = false }
+    
+    resources.size == 1 ? resources.first : resources
   end
 
   def detect(&blk)
