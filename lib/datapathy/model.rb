@@ -61,7 +61,7 @@ module Datapathy::Model
   end
 
   def ==(other)
-    self.key == other && other.key
+    self.key == (other && other.key)
   end
 
   def new_record?
