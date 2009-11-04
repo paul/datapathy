@@ -4,9 +4,12 @@ class Datapathy::Query
   attr_reader :model, :conditions,
               :offset, :count
 
-  def initialize(model, &blk)
+  def initialize(model, *attrs, &blk)
     @model = model
     @conditions = []
+    attrs.each do |k,v|
+      add_condition(k, :==, v)
+    end
     add(&blk) if block_given?
   end
 

@@ -1,5 +1,7 @@
 require 'active_support/core_ext/class/inheritable_attributes'
-require 'active_model/validations'
+require 'active_support/core_ext/hash/indifferent_access'
+require 'active_support/core_ext/hash/slice'
+#require 'active_model/validations'
 
 require 'datapathy/query'
 
@@ -7,7 +9,7 @@ module Datapathy::Model
 
   def self.included(klass)
     klass.extend(ClassMethods)
-    klass.send(:include, ActiveModel::Validations)
+    #klass.send(:include, ActiveModel::Validations)
   end
 
   attr_accessor :new_record, :collection
@@ -106,16 +108,6 @@ module Datapathy::Model
           instance_variable_set(ivar, val)
         end
           
-        # class_eval <<-EVAL
-        #   def #{name}          # def id
-        #     @#{name}           #   @id
-        #   end                  # end
-        #   alias #{name}? #{name}
-
-        #   def #{name}=(val)    # def id=(val)
-        #     @#{name} = val     #   @id = val
-        #   end                  # end
-        # EVAL
       end
     end
 
@@ -141,15 +133,15 @@ module Datapathy::Model
       new(record) if record
     end
 
-    def select(&blk)
-      query = Datapathy::Query.new(model, &blk)
+    def select(*attrs, &blk)
+      query = Datapathy::Query.new(model, *attrs, &blk)
       Datapathy::Collection.new(query)
     end
     alias all select
     alias find_all select
 
-    def detect(&blk) 
-      self.select(&blk).first
+    def detect(*attrs, &blk) 
+      self.select(*attrs, &blk).first
     end
     alias first detect
     alias find detect
@@ -180,7 +172,75 @@ module Datapathy::Model
       self
     end
 
+    def method_missing(method_id, *arguments, &block)
+      if match = DynamicFinderMatch.match(method_id)
+        if match.finder?
+
+        elsif match.instantiator?
+          self.class_eval %{
+            def self.#{method_id}(*args)
+              if args[0].is_a?(Hash)
+                attributes = args[0]
+                find_attributes = attributes.slice(*[:#{match.attribute_names.join(',:')}])
+              end
+
+              record = detect(find_attributes)
+
+              if record.nil?
+                record = self.new(attributes)
+                #{'record.save' if match.instantiator == :create}
+              end
+              
+              record
+            end
+          }, __FILE__, __LINE__
+          send(method_id, *arguments, &block)
+        end
+      else
+        super
+      end
+    end
+
   end
 
+  class DynamicFinderMatch
+    def self.match(method)
+      df_match = self.new(method)
+      df_match.finder ? df_match : nil
+    end
+
+    def initialize(method)
+      @finder = :first
+      case method.to_s
+      when /^find_(all_by|last_by|by)_([_a-zA-Z]\w*)$/
+        @finder = :last if $1 == 'last_by'
+        @finder = :all if $1 == 'all_by'
+        names = $2
+      when /^find_by_([_a-zA-Z]\w*)\!$/
+        @bang = true
+        names = $1
+      when /^find_or_(initialize|create)_by_([_a-zA-Z]\w*)$/
+        @instantiator = $1 == 'initialize' ? :new : :create
+        names = $2
+      else
+        @finder = nil
+      end
+      @attribute_names = names && names.split('_and_')
+    end
+
+    attr_reader :finder, :attribute_names, :instantiator
+
+    def finder?
+      !@finder.nil? && @instantiator.nil?
+    end
+
+    def instantiator?
+      @finder == :first && !@instantiator.nil?
+    end
+
+    def bang?
+      @bang
+    end
+  end
 end
 

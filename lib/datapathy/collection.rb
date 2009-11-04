@@ -57,6 +57,11 @@ class Datapathy::Collection
     EVAL
   end
 
+  def to_a
+    self.load! unless loaded?
+    @elements
+  end
+
   def load!
     @elements = model.adapter.read(query).map { |r|
       model.new(r)

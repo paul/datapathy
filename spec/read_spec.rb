@@ -9,7 +9,7 @@ describe 'reading models' do
 
     @records = [@record_a, @record_b, @record_c]
     @records.each do |record|
-      test_adapter.datastore[Article][record[:id]] = record.stringify_keys
+      test_adapter.datastore[Article][record[:id]] = record
     end
   end
 
@@ -59,17 +59,20 @@ describe 'reading models' do
   end
 
   describe 'Model.select' do
-    before do
-      @articles = Article.select { |a| a.title == @record_b[:title] }
-    end
 
-    it 'should retrieve all matching records' do
-      @articles.should have(2).items
-    end
+    describe '(&blk)' do
+      before do
+        @articles = Article.select { |a| a.title == @record_b[:title] }
+      end
 
-    it 'should retrieve the correct records' do
-      @articles.map { |a| a.id }.should include(@record_b[:id])
-      @articles.map { |a| a.id }.should include(@record_c[:id])
+      it 'should retrieve all matching records' do
+        @articles.should have(2).items
+      end
+
+      it 'should retrieve the correct records' do
+        @articles.map { |a| a.id }.should include(@record_b[:id])
+        @articles.map { |a| a.id }.should include(@record_c[:id])
+      end
     end
 
   end

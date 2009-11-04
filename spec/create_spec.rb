@@ -10,9 +10,9 @@ describe "Creating models" do
     it 'should store persistable attributes' do
       record = test_adapter.datastore[Article][@article.id]
 
-      record["id"].should    eql(@article.id)
-      record["title"].should eql(@article.title)
-      record["text"].should  eql(@article.text)
+      record[:id].should    eql(@article.id)
+      record[:title].should eql(@article.title)
+      record[:text].should  eql(@article.text)
     end
 
     it 'should not store other attributes' do
