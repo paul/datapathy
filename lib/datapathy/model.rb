@@ -1,6 +1,8 @@
 require 'active_support/core_ext/class/inheritable_attributes'
 require 'active_model/validations'
 
+require 'datapathy/query'
+
 module Datapathy::Model
 
   def self.included(klass)
@@ -8,13 +10,12 @@ module Datapathy::Model
     klass.send(:include, ActiveModel::Validations)
   end
 
-  attr_accessor :new_record
+  attr_accessor :new_record, :collection
 
   def initialize(attributes = {})
     attributes.each do |name, value|
       ivar = "@#{name.to_s.gsub(/\?$/, '')}"
       instance_variable_set(ivar, value)
-      #send("#{name}=", value)
     end
 
     @new_record = true
@@ -37,15 +38,23 @@ module Datapathy::Model
 
   def save
     if new_record?
-      self.class.adapter.create([self])
-      @new_record = false
+      create()
     else
-      self.class.adapter.update(persisted_attributes, [self])
+      update()
     end
   end
 
+  def create
+    adapter.create(collection)
+    @new_record = false
+  end
+
+  def update
+    adapter.update(persisted_attributes, collection)
+  end
+
   def delete
-    self.class.adapter.delete([self])
+    adapter.delete([self])
   end
 
   def key
@@ -66,6 +75,20 @@ module Datapathy::Model
 
   def new_record?
     @new_record
+  end
+
+  def adapter
+    self.class.adapter
+  end
+
+  def collection
+    return @collection if @collection
+    query = Datapathy::Query.new(self.class)
+    @collection = Datapathy::Collection.new(query, [self])
+  end
+
+  def query
+    collection.query
   end
 
   module ClassMethods

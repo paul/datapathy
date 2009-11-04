@@ -23,9 +23,12 @@ module Datapathy
 
 end
 
-require File.join(File.dirname(__FILE__), 'datapathy/model')
-require File.join(File.dirname(__FILE__), 'datapathy/query')
-require File.join(File.dirname(__FILE__), 'datapathy/collection')
-require File.join(File.dirname(__FILE__), 'datapathy/adapters/abstract_adapter')
-require File.join(File.dirname(__FILE__), 'datapathy/adapters/memory_adapter')
+$:.unshift(File.expand_path(File.dirname(__FILE__))) unless
+    $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
+
+require 'datapathy/model'
+require 'datapathy/query'
+require 'datapathy/collection'
+require 'datapathy/adapters/abstract_adapter'
+require 'datapathy/adapters/memory_adapter'
 

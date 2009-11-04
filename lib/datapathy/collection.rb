@@ -1,20 +1,30 @@
 class Datapathy::Collection
 
-  attr_reader :query, :model
+  attr_reader :query, :model, :adapter
 
   def initialize(query, elements = nil)
-    @query, @model = query, query.model
-    @elements = elements unless elements.nil?
+    @query, @model, @adapter = query, query.model, query.model.adapter
+    @elements = elements.map { |e| e.collection = self; e } unless elements.nil?
   end
 
-  def create(attributes)
+  def new(attributes = {})
     attributes = [attributes] if attributes.is_a?(Hash)
     resources = attributes.map do |attrs|
       model.new(attrs)
     end
 
     collection = self.class.new(query, resources)
-    query.model.adapter.create(collection)
+    resources.size == 1 ? resources.first : resources
+  end
+
+  def create(attributes = {})
+    attributes = [attributes] if attributes.is_a?(Hash)
+    resources = attributes.map do |attrs|
+      model.new(attrs)
+    end
+
+    collection = self.class.new(query, resources)
+    adapter.create(collection)
     resources.each { |r| r.new_record = false }
     
     resources.size == 1 ? resources.first : resources
