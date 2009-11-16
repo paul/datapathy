@@ -16,8 +16,9 @@ module Datapathy::Model
 
   def initialize(attributes = {})
     attributes.each do |name, value|
-      ivar = "@#{name.to_s.gsub(/\?$/, '')}"
-      instance_variable_set(ivar, value)
+      #ivar = "@#{name.to_s.gsub(/\?$/, '')}"
+      #instance_variable_set(ivar, value)
+      self.send(:"#{name.id2name}=", value)
     end
 
     @new_record = true
@@ -33,8 +34,9 @@ module Datapathy::Model
 
   def merge!(attributes)
     attributes.each do |name, value|
-      ivar = "@#{name.to_s.gsub(/\?$/, '')}"
-      instance_variable_set(ivar, value)
+      #ivar = "@#{name.to_s.gsub(/\?$/, '')}"
+      #instance_variable_set(ivar, value)
+      self.send(:"#{name.id2name}=", value)
     end
   end
 
@@ -107,7 +109,7 @@ module Datapathy::Model
         define_method("#{atr}=") do |val|
           instance_variable_set(ivar, val)
         end
-          
+
       end
     end
 
@@ -140,7 +142,7 @@ module Datapathy::Model
     alias all select
     alias find_all select
 
-    def detect(*attrs, &blk) 
+    def detect(*attrs, &blk)
       self.select(*attrs, &blk).first
     end
     alias first detect
@@ -190,7 +192,7 @@ module Datapathy::Model
                 record = self.new(attributes)
                 #{'record.save' if match.instantiator == :create}
               end
-              
+
               record
             end
           }, __FILE__, __LINE__

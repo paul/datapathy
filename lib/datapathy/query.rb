@@ -4,7 +4,7 @@ class Datapathy::Query
   attr_reader :model, :conditions,
               :offset, :count
 
-  def initialize(model, *attrs, &blk)
+  def initialize(model, attrs = {}, &blk)
     @model = model
     @conditions = []
     attrs.each do |k,v|
@@ -40,7 +40,7 @@ class Datapathy::Query
   end
 
   # Used in adapters to filter hashes of records.
-  # The keys of the hashes must be symbols representing 
+  # The keys of the hashes must be symbols representing
   # attribute names!
   def filter_records(records)
     records = match_records(records)
@@ -67,7 +67,7 @@ class Datapathy::Query
       returning Condition.new(method_name) do |condition|
         @conditions << condition
       end
-    else 
+    else
       super
     end
   end

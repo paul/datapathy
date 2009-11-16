@@ -1,3 +1,5 @@
+require 'active_support/core_ext/hash/indifferent_access'
+
 module Datapathy::Adapters
 
   # Adapters should extend this class, and implement the 4 CRUD methods:
@@ -8,15 +10,15 @@ module Datapathy::Adapters
   #   * resource - an instance of a model
   #   * record   - a non-model object (often a Hash) representing the data
   #                in a model. This is usually what comes out of the data-store.
-  #   
+  #
   class AbstractAdapter
 
     def initialize(options = {})
-      @options = options
+      @options = options.dup.with_indifferent_access
 
     end
 
-    # Writes resources to the data-store. 
+    # Writes resources to the data-store.
     #
     # @param [Enumerable<Resource>] resources
     #   The list of resources to be created
@@ -51,9 +53,9 @@ module Datapathy::Adapters
     #
     # @param [Datapathy::Query | Datapathy::Collection]
     #   The second parameter is either a query that selects the records to be
-    #   updated, or a collection of the records themselves. The first case is 
-    #   useful for performing bulk-updates without having to read the records 
-    #   from the data-store. 
+    #   updated, or a collection of the records themselves. The first case is
+    #   useful for performing bulk-updates without having to read the records
+    #   from the data-store.
     #
     # @return []
     def update(attributes, query_or_collection)
