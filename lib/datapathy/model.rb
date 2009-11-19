@@ -2,6 +2,7 @@ require 'active_support/core_ext/class/inheritable_attributes'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/hash/slice'
 #require 'active_model/validations'
+require 'active_model'
 
 require 'datapathy/query'
 
@@ -201,6 +202,10 @@ module Datapathy::Model
       else
         super
       end
+    end
+
+    def model_name
+      ActiveModel::Name.new(self, self.to_s)
     end
 
   end

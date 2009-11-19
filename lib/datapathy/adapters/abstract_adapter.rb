@@ -2,6 +2,8 @@ require 'active_support/core_ext/hash/indifferent_access'
 
 module Datapathy::Adapters
 
+  attr_reader :options
+
   # Adapters should extend this class, and implement the 4 CRUD methods:
   #   create, read, update and delete.
   #

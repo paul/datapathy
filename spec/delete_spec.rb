@@ -9,7 +9,7 @@ describe 'deleteing models' do
 
     @records = [@record_a, @record_b, @record_c]
     @records.each do |record|
-      test_adapter.datastore[Article][record[:id]] = record.stringify_keys
+      test_adapter.datastore[Article][record[:id]] = record
     end
   end
 
