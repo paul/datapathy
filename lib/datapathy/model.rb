@@ -16,12 +16,7 @@ module Datapathy::Model
   attr_accessor :new_record, :collection
 
   def initialize(attributes = {})
-    attributes.each do |name, value|
-      #ivar = "@#{name.to_s.gsub(/\?$/, '')}"
-      #instance_variable_set(ivar, value)
-      self.send(:"#{name.id2name}=", value)
-    end
-
+    merge!(attributes)
     @new_record = true
   end
 
@@ -33,11 +28,11 @@ module Datapathy::Model
     end
   end
 
-  def merge!(attributes)
+  def merge!(attributes = {})
     attributes.each do |name, value|
       #ivar = "@#{name.to_s.gsub(/\?$/, '')}"
       #instance_variable_set(ivar, value)
-      self.send(:"#{name.id2name}=", value)
+      send(:"#{name}=", value)
     end
   end
 
@@ -99,19 +94,8 @@ module Datapathy::Model
   module ClassMethods
 
     def persists(*args)
-      args.each do |atr|
-        persisted_attributes << atr
-        ivar=:"@#{atr.to_s.gsub(/\?$/,'')}"
-
-        define_method(atr) do
-          instance_variable_get(ivar)
-        end
-
-        define_method("#{atr}=") do |val|
-          instance_variable_set(ivar, val)
-        end
-
-      end
+      persisted_attributes.push(*args)
+      attr_accessor *args
     end
 
     def persisted_attributes
@@ -134,6 +118,7 @@ module Datapathy::Model
       query.add_condition(self, self.key, :==, key)
       record = adapter.read(query)
       new(record) if record
+      #detect(self.key => key)
     end
 
     def select(*attrs, &blk)
