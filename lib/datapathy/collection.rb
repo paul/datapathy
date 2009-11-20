@@ -26,7 +26,7 @@ class Datapathy::Collection
     collection = self.class.new(query, resources)
     adapter.create(collection)
     resources.each { |r| r.new_record = false }
-    
+
     resources.size == 1 ? resources.first : resources
   end
 
@@ -63,9 +63,7 @@ class Datapathy::Collection
   end
 
   def load!
-    @elements = model.adapter.read(query).map { |r|
-      model.new(r)
-    }
+    @elements = query.perform
   end
 
 end

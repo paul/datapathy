@@ -8,7 +8,7 @@ class Datapathy::Query
     @model = model
     @conditions = []
     attrs.each do |k,v|
-      add_condition(k, :==, v)
+      add_condition(model, k, :==, v)
     end
     add(&blk) if block_given?
   end
@@ -39,6 +39,17 @@ class Datapathy::Query
     @conditions.first.operand
   end
 
+  def perform
+    resources = model.adapter.read(self).map do |r|
+      model.new(r)
+    end
+    resources.select do |r|
+      method_conditions.all? do |c|
+        c.matches?(r)
+      end
+    end
+  end
+
   # Used in adapters to filter hashes of records.
   # The keys of the hashes must be symbols representing
   # attribute names!
@@ -51,7 +62,7 @@ class Datapathy::Query
 
   def match_records(records)
     records.select do |record|
-      @conditions.all? do |condition|
+      attribute_conditions.all? do |condition|
         condition.matches?(record)
       end
     end
@@ -63,20 +74,32 @@ class Datapathy::Query
   end
 
   def method_missing(method_name, *args)
-    if model.respond_to?(method_name.to_s) || model.instance_methods.include?(method_name.to_s)
-      returning Condition.new(method_name) do |condition|
-        @conditions << condition
-      end
-    else
-      super
-    end
+    condition = Condition.new(model, method_name, *args)
+    @conditions << condition
+    condition
+  end
+
+  def attribute_conditions
+    @conditions.select { |c| c.matches_attribute? }
+  end
+
+  def method_conditions
+    @conditions.select { |c| !c.matches_attribute? }
   end
 
   class Condition
     attr_reader :attribute, :operator, :operand
 
-    def initialize(attribute = nil, operator = nil, operand = nil)
-      @attribute, @operator, @operand = attribute, operator, operand
+    def initialize(model, attribute, *args)
+      @attribute = attribute
+      if model.persisted_attributes.include?(attribute)
+        @matches_attribute = true
+        @operator, @operand = *args
+      else
+        @matches_attribute = false
+        @args = args
+        @operator, @operand = :==, true
+      end
     end
 
     [ :==, :===, :eql?, :equal?, :=~, :<=>, :<=, :<, :>, :>= ].each do |op|
@@ -97,8 +120,16 @@ class Datapathy::Query
       @operand = nil
     end
 
+    def matches_attribute?
+      @matches_attribute
+    end
+
     def matches?(record)
-      value = record[attribute]
+      if matches_attribute?
+        value = record[attribute]
+      else
+        value = record.send(attribute, *@args)
+      end
       value.send(operator, operand)
     end
   end

@@ -131,7 +131,7 @@ module Datapathy::Model
 
     def [](key)
       query = Datapathy::Query.new(model)
-      query.add_condition(self.key, :==, key)
+      query.add_condition(self, self.key, :==, key)
       record = adapter.read(query)
       new(record) if record
     end
