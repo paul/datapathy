@@ -1,6 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe "Defining models" do
+describe "Defining models with read/write-only attributes" do
+  before do
+    pending "Is this even a good idea?"
+  end
 
   class PersistenceAuthority
     include Datapathy::Model

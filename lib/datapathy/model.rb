@@ -30,8 +30,6 @@ module Datapathy::Model
 
   def merge!(attributes = {})
     attributes.each do |name, value|
-      #ivar = "@#{name.to_s.gsub(/\?$/, '')}"
-      #instance_variable_set(ivar, value)
       send(:"#{name}=", value)
     end
   end
@@ -118,7 +116,6 @@ module Datapathy::Model
       query.add_condition(self, self.key, :==, key)
       record = adapter.read(query)
       new(record) if record
-      #detect(self.key => key)
     end
 
     def select(*attrs, &blk)
