@@ -2,4 +2,4 @@
 --format progress
 --loadby random
 --reverse
---drb
+--backtrace
