@@ -154,7 +154,14 @@ module Datapathy::Model
     def method_missing(method_id, *arguments, &block)
       if match = DynamicFinderMatch.match(method_id)
         if match.finder?
+          self.class_eval %{
+            def self.#{method_id}(*args)
+              find_attributes = Hash[[:#{match.attribute_names.join(',:')}].zip(args)]
 
+              #{match.finder == :first ? "detect(find_attributes)" : "select(find_attributes)"}
+            end
+          }, __FILE__, __LINE__
+          send(method_id, *arguments, &block)
         elsif match.instantiator?
           self.class_eval %{
             def self.#{method_id}(*args)
