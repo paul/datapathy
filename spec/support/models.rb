@@ -2,7 +2,7 @@
 class Article
   include Datapathy::Model
 
-  persists :id, :title, :text
+  persists :id, :title, :text, :published_at
 
   def summary
     text[0,30]

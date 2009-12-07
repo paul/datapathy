@@ -57,56 +57,5 @@ describe 'reading models' do
     end
 
   end
-
-  describe 'Model.select' do
-
-    describe '(&blk)' do
-      before do
-        @articles = Article.select { |a| a.title == @record_b[:title] }
-      end
-
-      it 'should retrieve all matching records' do
-        @articles.should have(2).items
-      end
-
-      it 'should retrieve the correct records' do
-        @articles.map { |a| a.id }.should include(@record_b[:id])
-        @articles.map { |a| a.id }.should include(@record_c[:id])
-      end
-    end
-
-    describe '{hash}' do
-      before do
-        @articles = Article.select(:title => @record_b[:title])
-      end
-
-      it 'should retrieve all matching records' do
-        @articles.should have(2).items
-      end
-
-      it 'should retrieve the correct records' do
-        @articles.map { |a| a.id }.should include(@record_b[:id])
-        @articles.map { |a| a.id }.should include(@record_c[:id])
-      end
-    end
-
-    describe 'by method' do
-      before do
-        @articles = Article.select { |a| a.has_title?(@record_b[:title]) }
-      end
-
-      it 'should retrieve all matching records' do
-        @articles.should have(2).items
-      end
-
-      it 'should retrieve the correct records' do
-        @articles.map { |a| a.id }.should include(@record_b[:id])
-        @articles.map { |a| a.id }.should include(@record_c[:id])
-      end
-
-    end
-
-  end
-
 end
 
