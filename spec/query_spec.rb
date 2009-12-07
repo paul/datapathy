@@ -44,6 +44,17 @@ describe 'querying models' do
         should include_records(@record_b, @record_c)
     end
 
+    it 'should match chained selects' do
+      Article.select { |a| a.title == "Datapathy is awesome!" }.
+              select { |a| a.text == "Try it today!" }.
+        should include_records(@record_b)
+    end
+
+    it 'should match >' do
+      Article.select { |a| a.published_at > 1.day.ago }.
+        should include_records(@record_c)
+    end
+
   end
 
   describe '{hash}' do
