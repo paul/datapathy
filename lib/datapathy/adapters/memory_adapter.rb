@@ -1,4 +1,5 @@
 require 'active_support/core_ext/hash/keys'
+require 'active_support/core_ext/array/wrap'
 
 module Datapathy::Adapters
 
@@ -16,7 +17,7 @@ module Datapathy::Adapters
 
     def read(query)
       if query.key_lookup?
-        records_for(query)[query.key]
+        Array.wrap(records_for(query)[query.key])
       else
         query.filter_records(records_for(query).values)
       end

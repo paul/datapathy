@@ -21,6 +21,9 @@ module Datapathy
     @adapter = adapter
   end
 
+  class RecordNotFound < StandardError
+  end
+
 end
 
 $:.unshift(File.expand_path(File.dirname(__FILE__))) unless

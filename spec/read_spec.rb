@@ -41,6 +41,12 @@ describe 'reading models' do
         @article.send(atr).should eql(@record[atr])
       end
     end
+
+    it 'should raise an exception if the record is not found' do
+      lambda {
+        @article = Article[new_uuid]
+      }.should raise_error(Datapathy::RecordNotFound)
+    end
   end
 
   describe 'Model.detect' do

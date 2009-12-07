@@ -3,15 +3,12 @@ require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/hash/slice'
 #require 'active_model/validations'
 require 'active_model'
+require 'active_support/concern'
 
 require 'datapathy/query'
 
 module Datapathy::Model
-
-  def self.included(klass)
-    klass.extend(ClassMethods)
-    #klass.send(:include, ActiveModel::Validations)
-  end
+  extend ActiveSupport::Concern
 
   attr_accessor :new_record, :collection
 
@@ -112,10 +109,7 @@ module Datapathy::Model
     end
 
     def [](key)
-      query = Datapathy::Query.new(model)
-      query.add_condition(self, self.key, :==, key)
-      record = adapter.read(query)
-      new(record) if record
+      detect(self.key => key) || raise(Datapathy::RecordNotFound, "No #{model} found with #{self.key} `#{key}`")
     end
 
     def select(*attrs, &blk)
@@ -126,7 +120,7 @@ module Datapathy::Model
     alias find_all select
 
     def detect(*attrs, &blk)
-      self.select(*attrs, &blk).first
+      select(*attrs, &blk).first
     end
     alias first detect
     alias find detect
