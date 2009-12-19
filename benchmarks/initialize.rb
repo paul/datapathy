@@ -24,12 +24,16 @@ class PlainModel
   attr_accessor :id, :title, :text
 
   def initialize(attrs = {})
-    #@id, @title, @text = attrs[:id], attrs[:title], attrs[:text]
-    attrs.each do |key,val|
-      send("#{key}=", val)
-    end
+    @id, @title, @text = attrs[:id], attrs[:title], attrs[:text]
   end
 
+end
+
+class HashModel
+  def initialize(attributes = {})
+    attrs = {}
+    attrs.merge!(attributes)
+  end
 end
 
 ATTRS = {:id => 1, :title => "Foo", :text => "Bar"}
@@ -38,16 +42,19 @@ RBench.run(100_000) do
 
   column :times
   column :plain, :title => "Ruby Class"
+  column :hash,  :title => "Hash Model"
   column :datapathy, :title => "Datapathy"
   column :datamapper, :title => "DM #{DataMapper::VERSION}"
-  #column :dpdm, :title => "DP/DM", :compare => [:datapathy, :datamapper]
 
   report "#new (no attributes)" do
     plain do
       PlainModel.new
     end
+    hash do
+      HashModel.new
+    end
     datapathy do
-      DataMapperModel.new
+      DatapathyModel.new
     end
     datamapper do
       DataMapperModel.new
@@ -58,8 +65,11 @@ RBench.run(100_000) do
     plain do
       PlainModel.new ATTRS
     end
+    hash do
+      HashModel.new ATTRS
+    end
     datapathy do
-      DataMapperModel.new ATTRS
+      DatapathyModel.new.merge!(ATTRS)
     end
     datamapper do
       DataMapperModel.new ATTRS

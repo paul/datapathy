@@ -14,7 +14,10 @@ module Datapathy::Model
   attr_accessor :new_record, :collection
 
   def initialize(attributes = {})
-    merge!(attributes)
+    @attributes = {}
+    attributes.each do |name, value|
+      send(:"#{name}=", value)
+    end
     @new_record = true
   end
 
@@ -27,9 +30,8 @@ module Datapathy::Model
   end
 
   def merge!(attributes = {})
-    attributes.each do |name, value|
-      send(:"#{name}=", value)
-    end
+    @attributes ||= {}
+    @attributes.merge!(attributes)
   end
 
   def save
@@ -97,7 +99,18 @@ module Datapathy::Model
 
     def persists(*args)
       persisted_attributes.push(*args)
-      attr_accessor *args
+      #attr_accessor *args
+      args.each do |name|
+        class_eval <<-CODE
+          def #{name}
+            @attributes[:#{name}]
+          end
+
+          def #{name}=(val)
+            @attributes[:#{name}] = val
+          end
+        CODE
+      end
     end
 
     def persisted_attributes
