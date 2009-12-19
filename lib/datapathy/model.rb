@@ -30,7 +30,6 @@ module Datapathy::Model
   end
 
   def merge!(attributes = {})
-    @attributes ||= {}
     @attributes.merge!(attributes)
   end
 
@@ -115,6 +114,10 @@ module Datapathy::Model
 
     def persisted_attributes
       @persisted_attributes ||= []
+    end
+
+    def allocate(attributes = {})
+      super.merge!(attributes = {})
     end
 
     def create(attributes)
