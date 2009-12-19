@@ -20,6 +20,18 @@ class DataMapperModel
 end
 DataMapper.setup(:default, :adapter => :in_memory)
 
+require 'active_record'
+ActiveRecord::Base.establish_connection(
+  :adapter => "sqlite3",
+  :database  => "benchmark.db"
+)
+ActiveRecord::Base.connection.execute("DROP TABLE IF EXISTS active_record_models")
+ActiveRecord::Base.connection.execute("CREATE TABLE active_record_models (id INTEGER UNIQUE, title STRING, text STRING)")
+class ActiveRecordModel < ActiveRecord::Base
+end
+# Have AR scan the table before the benchmark
+ActiveRecordModel.new
+
 class PlainModel
   attr_accessor :id, :title, :text
 
@@ -45,6 +57,7 @@ RBench.run(100_000) do
   column :hash,  :title => "Hash Model"
   column :datapathy, :title => "Datapathy"
   column :datamapper, :title => "DM #{DataMapper::VERSION}"
+  column :ar,         :title => "AR 3.0.pre"
 
   report "#new (no attributes)" do
     plain do
@@ -58,6 +71,9 @@ RBench.run(100_000) do
     end
     datamapper do
       DataMapperModel.new
+    end
+    ar do
+      ActiveRecordModel.new
     end
   end
 
@@ -73,6 +89,9 @@ RBench.run(100_000) do
     end
     datamapper do
       DataMapperModel.new ATTRS
+    end
+    ar do
+      ActiveRecordModel.new ATTRS
     end
   end
 
