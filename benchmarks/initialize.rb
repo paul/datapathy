@@ -53,11 +53,12 @@ ATTRS = {:id => 1, :title => "Foo", :text => "Bar"}
 RBench.run(100_000) do
 
   column :times
-  column :plain, :title => "Ruby Class"
-  column :hash,  :title => "Hash Model"
-  column :datapathy, :title => "Datapathy"
-  column :datamapper, :title => "DM #{DataMapper::VERSION}"
-  column :ar,         :title => "AR 3.0.pre"
+  column :plain,       :title => "Ruby Class"
+  column :hash,        :title => "Hash Model"
+  column :datapathy,   :title => "Datapathy #new"
+  column :datapathy_a, :title => "Datapathy #new_from_attributes"
+  column :datamapper,  :title => "DM #{DataMapper::VERSION}"
+  column :ar,          :title => "AR 3.0.pre"
 
   report "#new (no attributes)" do
     plain do
@@ -68,6 +69,9 @@ RBench.run(100_000) do
     end
     datapathy do
       DatapathyModel.new
+    end
+    datapathy_a do
+      DatapathyModel.new_from_attributes
     end
     datamapper do
       DataMapperModel.new
@@ -85,7 +89,10 @@ RBench.run(100_000) do
       HashModel.new ATTRS
     end
     datapathy do
-      DatapathyModel.new.merge!(ATTRS)
+      DatapathyModel.new ATTRS
+    end
+    datapathy_a do
+      DatapathyModel.new_from_attributes ATTRS
     end
     datamapper do
       DataMapperModel.new ATTRS
