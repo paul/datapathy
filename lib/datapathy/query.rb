@@ -41,7 +41,9 @@ class Datapathy::Query
 
   def perform
     resources = model.adapter.read(self).map do |r|
-      model.new(r)
+      record = model.new(r)
+      record.new_record = false
+      record
     end
     resources.select do |r|
       method_conditions.all? do |c|

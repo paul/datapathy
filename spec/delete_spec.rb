@@ -23,7 +23,9 @@ describe 'deleteing models' do
     end
 
     it 'should remove the record' do
-      Article[@record[:id]].should be_nil
+      lambda {
+        Article[@record[:id]]
+      }.should raise_error(Datapathy::RecordNotFound)
     end
 
     it 'should not delete other records' do

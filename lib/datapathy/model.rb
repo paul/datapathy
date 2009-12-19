@@ -1,14 +1,15 @@
+require 'active_support/concern'
 require 'active_support/core_ext/class/inheritable_attributes'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/hash/slice'
-#require 'active_model/validations'
+
 require 'active_model'
-require 'active_support/concern'
 
 require 'datapathy/query'
 
 module Datapathy::Model
   extend ActiveSupport::Concern
+  include ActiveModel::Validations
 
   attr_accessor :new_record, :collection
 
@@ -84,6 +85,12 @@ module Datapathy::Model
 
   def query
     collection.query
+  end
+
+  #override the ActiveModel::Validations one, because its dumb
+  def valid?
+    _run_validate_callbacks if errors.empty?
+    errors.empty?
   end
 
   module ClassMethods

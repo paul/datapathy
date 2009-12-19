@@ -15,3 +15,11 @@ class Article
 
 end
 
+class Person
+  include Datapathy::Model
+
+  persists :id, :name
+
+  validates_presence_of :name
+
+end

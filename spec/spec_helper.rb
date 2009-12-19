@@ -25,5 +25,6 @@ end
 Spec::Runner.configure do |config|
 
   config.include(Helpers)
-  
+  config.include(Matchers)
+
 end

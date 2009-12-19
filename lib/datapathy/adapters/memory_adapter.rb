@@ -11,7 +11,11 @@ module Datapathy::Adapters
 
     def create(resources)
       resources.each do |resource|
-        records_for(resource)[resource.key] = resource.persisted_attributes
+        if records_for(resource).has_key?(resource.key)
+          resource.errors[resource.model.key] << "Must be unique"
+        else
+          records_for(resource)[resource.key] = resource.persisted_attributes
+        end
       end
     end
 
