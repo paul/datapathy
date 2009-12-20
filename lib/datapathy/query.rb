@@ -1,3 +1,4 @@
+require 'active_support/basic_object'
 
 class Datapathy::Query
 
@@ -6,57 +7,41 @@ class Datapathy::Query
 
   def initialize(model, attrs = {}, &blk)
     @model = model
-    @conditions = []
+    @conditions = ConditionSet.new
+    @blocks = []
     attrs.each do |k,v|
-      add_condition(model, k, :==, v)
+      add { |q| q.send(k) == v }
     end
     add(&blk) if block_given?
   end
 
-  def add_condition(*args)
-    @conditions << Condition.new(*args)
-  end
-
   def add(&blk)
-    begin
-      yield self
-    rescue NoMethodError => e
-      raise NoMethodError, "no attribute `#{e.name}' on #{model} to be queried"
-    end
-  end
-
-  def add_limit(offset, count)
-    @offset, @count = offset, count
+    @blocks << blk
+    yield @conditions
   end
 
   def key_lookup?
     @conditions.size == 1 &&
-      @conditions.first.attribute == model.key &&
-      @conditions.first.operator == :==
+      @conditions.first.operation == model.key &&
+      @conditions.first.then.operation == :==
   end
 
   def key
-    @conditions.first.operand
+    @conditions.first.operation if key_lookup?
   end
 
   def perform
-    resources = model.adapter.read(self).map do |r|
-      record = model.new(r)
+    resources = model.adapter.read(self).map do |record|
+      record = model.new(record)
       record.new_record = false
       record
     end
-    resources.select do |r|
-      method_conditions.all? do |c|
-        c.matches?(r)
-      end
-    end
+    filter_records(resources)
   end
 
-  # Used in adapters to filter hashes of records.
-  # The keys of the hashes must be symbols representing
-  # attribute names!
   def filter_records(records)
     records = match_records(records)
+    records = order_records(records)
     records = limit_records(records)
 
     records
@@ -64,10 +49,14 @@ class Datapathy::Query
 
   def match_records(records)
     records.select do |record|
-      attribute_conditions.all? do |condition|
-        condition.matches?(record)
+      @blocks.all? do |block|
+        block.call(record)
       end
     end
+  end
+
+  def order_records(records)
+    records
   end
 
   def limit_records(records)
@@ -75,66 +64,35 @@ class Datapathy::Query
     records.slice(@offset || 0, @count)
   end
 
-  def method_missing(method_name, *args)
-    condition = Condition.new(model, method_name, *args)
-    @conditions << condition
-    condition
+  def limit(count, offset = 0)
+    @count, @offset = count, offset
   end
 
-  def attribute_conditions
-    @conditions.select { |c| c.matches_attribute? }
-  end
-
-  def method_conditions
-    @conditions.select { |c| !c.matches_attribute? }
+  class ConditionSet < Array
+    def method_missing(method_name, *args, &blk)
+      condition = Condition.new(method_name, *args, &blk)
+      self << condition
+      condition
+    end
   end
 
   class Condition
-    attr_reader :attribute, :operator, :operand
+    undef_method :==
+    undef_method :equal?
 
-    def initialize(model, attribute, *args)
-      @attribute = attribute
-      if model.persisted_attributes.include?(attribute)
-        @matches_attribute = true
-        @operator, @operand = *args
-      else
-        @matches_attribute = false
-        @args = args
-        @operator, @operand = :==, true
-      end
+    attr_reader :then
+    attr_accessor :operation, :arguments, :block
+
+    def initialize(operation, *arguments, &block)
+      @operation = operation
+      @arguments = arguments unless arguments.empty?
+      @block = block if block
     end
 
-    [ :==, :===, :eql?, :equal?, :=~, :<=>, :<=, :<, :>, :>= ].each do |op|
-      define_method(op) do |val|
-        @operator = op
-        @operand = val
-      end
+    def method_missing(method_name, *args, &blk)
+      @then = self.class.new(method_name, *args, &blk)
     end
 
-    def contains?(val)
-      @operator = :contains
-      @operand = val
-      self
-    end
-
-    def nil?
-      @operator = :==
-      @operand = nil
-    end
-
-    def matches_attribute?
-      @matches_attribute
-    end
-
-    def matches?(record)
-      if matches_attribute?
-        value = record[attribute]
-      else
-        value = record.send(attribute, *@args)
-      end
-      value.send(operator, operand)
-    end
   end
-
 
 end

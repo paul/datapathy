@@ -23,7 +23,7 @@ module Datapathy::Adapters
       if query.key_lookup?
         Array.wrap(records_for(query)[query.key])
       else
-        query.filter_records(records_for(query).values)
+        records_for(query).values
       end
     end
 

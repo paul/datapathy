@@ -55,9 +55,21 @@ describe 'querying models' do
         should include_records(@record_c)
     end
 
+    describe 'limit' do
+
+      it 'should limit records' do
+        pending
+        Article.select { |a| limit 2 }.
+          should include_records(@record_a, @record_b)
+      end
+
+    end
+
+
   end
 
   describe '{hash}' do
+
     before do
       @articles = Article.select(:title => @record_b[:title])
     end
@@ -70,6 +82,7 @@ describe 'querying models' do
       @articles.map { |a| a.id }.should include(@record_b[:id])
       @articles.map { |a| a.id }.should include(@record_c[:id])
     end
+
   end
 
 end
