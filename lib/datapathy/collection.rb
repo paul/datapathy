@@ -37,24 +37,25 @@ class Datapathy::Collection
     resources.size == 1 ? resources.first : resources
   end
 
-  def detect(&blk)
-    select(&blk).first
+  def detect(*attrs, &blk)
+    select(*attrs, &blk).first
   end
   alias find detect
 
-  def select(&blk)
-    query.add(&blk)
+  def select(*attrs, &blk)
+    query.add(*attrs, &blk)
     self
   end
   alias find_all select
 
   def update(attributes = {}, &blk)
     query.add(&blk)
-    adapter.update(attributes, self)
+    @elements = query.initialize_resources(adapter.update(attributes, self))
   end
 
   def delete(&blk)
-
+    query.add(&blk)
+    @elements = query.initialize_resources(adapter.delete(self))
   end
 
   def loaded?

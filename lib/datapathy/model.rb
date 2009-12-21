@@ -48,11 +48,11 @@ module Datapathy::Model
   end
 
   def update
-    adapter.update(persisted_attributes, collection)
+    collection.update(persisted_attributes)
   end
 
   def delete
-    adapter.delete([self])
+    collection.delete
   end
 
   def key
@@ -138,8 +138,8 @@ module Datapathy::Model
     end
 
     def select(*attrs, &blk)
-      query = Datapathy::Query.new(model, *attrs, &blk)
-      Datapathy::Collection.new(query)
+      query = Datapathy::Query.new(model)
+      Datapathy::Collection.new(query).select(*attrs, &blk)
     end
     alias all select
     alias find_all select
@@ -151,15 +151,11 @@ module Datapathy::Model
     alias find detect
 
     def update(attributes, &blk)
-      query = Datapathy::Query.new(model, &blk)
-
-      adapter.update(attributes, query)
+      select(&blk).update(attributes)
     end
 
     def delete(&blk)
-      query = Datapathy::Query.new(model, &blk)
-
-      adapter.delete(query)
+      select(&blk).delete
     end
 
     def key

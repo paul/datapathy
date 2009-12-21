@@ -6,19 +6,27 @@ class Datapathy::Query
   attr_reader :model, :conditions,
               :offset, :count
 
-  def initialize(model, attrs = {}, &blk)
+  def initialize(model, conditions = {}, &blk)
     @model = model
     @conditions = ConditionSet.new
     @blocks = []
-    attrs.each do |k,v|
-      add { |q| q.send(k) == v }
-    end
-    add(&blk) if block_given?
+    add(conditions, &blk)
   end
 
-  def add(&blk)
+  def add(conditions = {}, &blk)
+    add_conditions_hash(conditions)
+    add_conditions(&blk) if block_given?
+  end
+
+  def add_conditions(&blk)
     @blocks << blk
     yield @conditions
+  end
+
+  def add_conditions_hash(conditions = {})
+    conditions.each do |k,v|
+      add_conditions { |q| q.send(k) == v }
+    end
   end
 
   def key_lookup?
