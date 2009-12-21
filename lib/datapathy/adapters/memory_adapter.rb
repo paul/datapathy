@@ -9,10 +9,11 @@ module Datapathy::Adapters
       super
     end
 
-    def create(resources)
-      resources.each do |resource|
+    def create(collection)
+      collection.map do |resource|
         if records_for(resource).has_key?(resource.key)
           resource.errors[resource.model.key] << "Must be unique"
+          resource
         else
           records_for(resource)[resource.key] = resource.persisted_attributes
         end
@@ -27,36 +28,32 @@ module Datapathy::Adapters
       end
     end
 
-    def update(attributes, query_or_collection)
-      if query_or_collection.is_a?(Datapathy::Query)
-        query = query_or_collection
-
-        query.initialize_and_filter(read(query)).each do |resource|
-          record = resource.persisted_attributes.merge!(attributes)
-          records_for(query)[resource.key] = record
+    def update(attributes, collection)
+      if collection.loaded?
+        collection.map do |resource|
+          records_for(resource)[resource.key] = resource.persisted_attributes.merge(attributes)
         end
       else
-        collection = query_or_collection
+        query = collection.query
 
-        collection.each do |resource|
-          records_for(resource)[resource.key] = resource.persisted_attributes
+        query.initialize_and_filter(read(query)).map do |resource|
+          record = resource.persisted_attributes.merge!(attributes)
+          records_for(query)[resource.key] = record
         end
       end
     end
 
-    def delete(query_or_collection)
-      if query_or_collection.is_a?(Datapathy::Query)
-        query = query_or_collection
-        key = query.model.key
-
-        query.initialize_and_filter(read(query)).each do |record|
-          records_for(query).delete(record.key)
+    def delete(collection)
+      if collection.loaded?
+        collection.map do |resource|
+          records_for(resource).delete(resource.key)
         end
       else
-        collection = query_or_collection
+        query = collection.query
+        key = query.model.key
 
-        collection.each do |resource|
-          records_for(resource).delete(resource.key)
+        query.initialize_and_filter(read(query)).map do |record|
+          records_for(query).delete(record.key)
         end
       end
     end

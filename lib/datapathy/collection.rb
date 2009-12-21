@@ -2,7 +2,14 @@ class Datapathy::Collection
 
   attr_reader :query, :model, :adapter
 
-  def initialize(query, elements = nil)
+  def initialize(*elements)
+    raise "Collection must be initialized with a Query or Model(s)." if elements.empty?
+    if elements.first.is_a?(Datapathy::Query)
+      query = elements.shift
+    else
+      query = Datapathy::Query.new(elements.first.model)
+    end
+
     @query, @model, @adapter = query, query.model, query.model.adapter
     @elements = elements.map { |e| e.collection = self; e } unless elements.nil?
   end
@@ -41,8 +48,17 @@ class Datapathy::Collection
   end
   alias find_all select
 
+  def update(attributes = {}, &blk)
+    query.add(&blk)
+    adapter.update(attributes, self)
+  end
+
+  def delete(&blk)
+
+  end
+
   def loaded?
-    @elements
+    !@elements.empty?
   end
 
   # Since @elements is an array, pretty much every array method should trigger

@@ -81,8 +81,7 @@ module Datapathy::Model
 
   def collection
     return @collection if @collection
-    query = Datapathy::Query.new(self.class)
-    @collection = Datapathy::Collection.new(query, [self])
+    @collection = Datapathy::Collection.new(self)
   end
 
   def query
