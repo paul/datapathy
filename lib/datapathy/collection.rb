@@ -38,15 +38,32 @@ class Datapathy::Collection
   end
 
   def detect(*attrs, &blk)
-    select(*attrs, &blk).first
+    slice(0, 1)
+    select(*attrs, &blk)
+    to_a.first
   end
   alias find detect
+  alias first detect
 
   def select(*attrs, &blk)
     query.add(*attrs, &blk)
     self
   end
   alias find_all select
+
+  def slice(index_or_start_or_range, length = nil)
+    if index_or_start_or_range.is_a?(Range)
+      range = index_or_start_or_range
+      count, offset = (range.last - range.first), range.first
+    elsif length
+      start = index_or_start_or_range
+      count, offset = length, start
+    else
+      count, offset = 1, index_or_start_or_range
+    end
+
+    query.limit(count, offset)
+  end
 
   def update(attributes = {}, &blk)
     query.add(&blk)
