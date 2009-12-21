@@ -1,4 +1,5 @@
 require 'active_support/basic_object'
+require 'active_support/core_ext/module/delegation'
 
 class Datapathy::Query
 
@@ -27,58 +28,75 @@ class Datapathy::Query
   end
 
   def key
-    @conditions.first.operation if key_lookup?
+    @conditions.first.then.arguments.first
   end
 
   def perform
-    resources = model.adapter.read(self).map do |record|
-      record = model.new(record)
-      record.new_record = false
-      record
-    end
-    filter_records(resources)
+    initialize_and_filter(model.adapter.read(self))
   end
 
-  def filter_records(records)
-    records = match_records(records)
-    records = order_records(records)
-    records = limit_records(records)
-
-    records
+  def initialize_and_filter(records)
+    filter(initialize_resources(records))
   end
 
-  def match_records(records)
-    records.select do |record|
+  def initialize_resources(records)
+    records.map { |record|
+      resource = model.new(record)
+      resource.new_record = false
+      resource
+    }
+  end
+
+  def filter(resources)
+    resources = match_resources(resources)
+    resources = order_resources(resources)
+    resources = limit_resources(resources)
+
+    resources
+  end
+
+  def match_resources(resources)
+    resources.select do |record|
       @blocks.all? do |block|
         block.call(record)
       end
     end
   end
 
-  def order_records(records)
-    records
+  def order_resources(resources)
+    resources
   end
 
-  def limit_records(records)
-    return records unless @offset || @count
-    records.slice(@offset || 0, @count)
+  def limit_resources(resources)
+    return resources unless @offset || @count
+    resources.slice(@offset || 0, @count)
   end
 
   def limit(count, offset = 0)
     @count, @offset = count, offset
   end
 
-  class ConditionSet < Array
+  class ConditionSet < ActiveSupport::BasicObject
+
+    delegate :size, :first, :to => :@conditions
+
+    def initialize
+      @conditions = []
+    end
+
     def method_missing(method_name, *args, &blk)
       condition = Condition.new(method_name, *args, &blk)
-      self << condition
+      @conditions << condition
       condition
+    end
+
+
+    def inspect
+      @conditions.inspect
     end
   end
 
-  class Condition
-    undef_method :==
-    undef_method :equal?
+  class Condition < ActiveSupport::BasicObject
 
     attr_reader :then
     attr_accessor :operation, :arguments, :block
@@ -90,7 +108,15 @@ class Datapathy::Query
     end
 
     def method_missing(method_name, *args, &blk)
-      @then = self.class.new(method_name, *args, &blk)
+      @then = Condition.new(method_name, *args, &blk)
+    end
+
+    def respond_to?(arg)
+      false
+    end
+
+    def inspect
+      "#{operation}(#{@arguments.inspect unless @arguments.nil?})#{".#{@then.inspect}" if @then}"
     end
 
   end

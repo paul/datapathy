@@ -30,11 +30,10 @@ module Datapathy::Adapters
     def update(attributes, query_or_collection)
       if query_or_collection.is_a?(Datapathy::Query)
         query = query_or_collection
-        key   = query.model.key
 
-        read(query).each do |record|
-          record.merge!(attributes)
-          records_for(query)[record[key]] = record
+        query.initialize_and_filter(read(query)).each do |resource|
+          record = resource.persisted_attributes.merge!(attributes)
+          records_for(query)[resource.key] = record
         end
       else
         collection = query_or_collection
@@ -50,8 +49,8 @@ module Datapathy::Adapters
         query = query_or_collection
         key = query.model.key
 
-        read(query).each do |record|
-          records_for(query).delete(record[key])
+        query.initialize_and_filter(read(query)).each do |record|
+          records_for(query).delete(record.key)
         end
       else
         collection = query_or_collection

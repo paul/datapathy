@@ -43,7 +43,7 @@ describe 'deleteing models' do
     end
 
     it 'should not remove other records' do
-      Article[@record[:id]].should_not be_nil
+      Article.detect { |a| a.id == @record[:id] }.should_not be_nil
     end
 
   end

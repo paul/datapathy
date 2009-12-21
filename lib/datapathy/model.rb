@@ -154,9 +154,7 @@ module Datapathy::Model
     def update(attributes, &blk)
       query = Datapathy::Query.new(model, &blk)
 
-      adapter.update(attributes, query).map do |r|
-        new(r)
-      end
+      adapter.update(attributes, query)
     end
 
     def delete(&blk)
