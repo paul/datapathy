@@ -39,10 +39,6 @@ class Datapathy::Query
     @conditions.first.then.arguments.first
   end
 
-  def perform
-    initialize_and_filter(model.adapter.read(self))
-  end
-
   def initialize_and_filter(records)
     filter(initialize_resources(records))
   end

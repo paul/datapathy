@@ -44,8 +44,9 @@ describe 'Adapter API' do
       @adapter.datastore[Article][@article.id] = @article.persisted_attributes
 
       @query = Datapathy::Query.new(Article) { |q| q.title == @article.title }
+      @collection = Datapathy::Collection.new(@query)
 
-      @results = @adapter.read(@query)
+      @results = @adapter.read(@collection)
       @result = @results.first
     end
 

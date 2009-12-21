@@ -20,7 +20,8 @@ module Datapathy::Adapters
       end
     end
 
-    def read(query)
+    def read(collection)
+      query = collection.query
       if query.key_lookup?
         Array.wrap(records_for(query)[query.key])
       else
@@ -36,7 +37,7 @@ module Datapathy::Adapters
       else
         query = collection.query
 
-        query.initialize_and_filter(read(query)).map do |resource|
+        query.initialize_and_filter(read(collection)).map do |resource|
           record = resource.persisted_attributes.merge!(attributes)
           records_for(query)[resource.key] = record
         end
@@ -52,7 +53,7 @@ module Datapathy::Adapters
         query = collection.query
         key = query.model.key
 
-        query.initialize_and_filter(read(query)).map do |record|
+        query.initialize_and_filter(read(collection)).map do |record|
           records_for(query).delete(record.key)
         end
       end

@@ -80,7 +80,7 @@ class Datapathy::Collection
   end
 
   def load!
-    @elements = query.perform
+    @elements = query.initialize_and_filter(adapter.read(self))
   end
 
 end
