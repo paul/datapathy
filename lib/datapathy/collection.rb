@@ -6,14 +6,15 @@ class Datapathy::Collection
   # Collection.new(model, ...)
   # Collection.new(Model, record, ...)
   def initialize(*elements)
-    raise "Collection must be initialized with a Query or Model(s)." if elements.empty?
     if elements.first.is_a?(Datapathy::Query)
       query = elements.shift
     elsif elements.first.is_a?(Datapathy::Model)
       query = Datapathy::Query.new(elements.first.model)
-    else
+    elsif elements.first.ancestors.include?(Datapathy::Model)
       query = Datapathy::Query.new(elements.shift)
-      elements.map! { |r| query.model.new(self, r) }
+      elements = Array.wrap(query.model.new(*elements))
+    else
+      raise "First element must be a query, model, or Model class"
     end
 
     @query, @model, @adapter = query, query.model, query.model.adapter

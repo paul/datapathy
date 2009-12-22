@@ -87,18 +87,13 @@ module Datapathy::Model
   module ClassMethods
 
     def new(*attributes)
-      if attributes.first.is_a?(Datapathy::Collection)
-        collection = attributes.shift
-        resources = attributes.map do |attrs|
-          m = model.allocate
-          m.__send__(:initialize, attrs)
-          m
-        end
-        collection = Datapathy::Collection.new(*resources)
-      else
-        collection = Datapathy::Collection.new(self, *attributes)
+      resources = attributes.map do |attrs|
+        m = model.allocate
+        m.__send__(:initialize, attrs)
+        m
       end
 
+      collection = Datapathy::Collection.new(*resources)
       collection.size == 1 ? collection.first : collection
     end
 
