@@ -1,6 +1,48 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "Creating models" do
+  before do
+    @record_foo = {:id => new_uuid, :title => "Foo", :text => "foo"}
+    @record_bar = {:id => new_uuid, :title => "Bar", :text => "bar"}
+  end
+
+  it "should create one at a time" do
+    result = Article.create(@record_foo)
+
+    result.should be_an(Article)
+    result.should_not be_new_record
+  end
+
+  it "should create many" do
+    result = Article.create(@record_foo, @record_bar)
+
+    result.should be_a(Collection)
+    result.first.should be_an(Article)
+    result.first.should_not be_new_record
+  end
+
+  it "should create a record in an existing collection of one" do
+    result = Article.new(@record_foo).create
+
+    result.should be_an(Article)
+    result.should_not be_new_record
+  end
+
+  it "should create one through a collection" do
+    result = Article.all.create(@record_foo)
+
+    result.should be_an(Article)
+    result.should_not be_new_record
+  end
+
+  it "should create many through a collection" do
+    result = Article.all.create(@record_foo, @record_bar)
+
+    result.should be_a(Collection)
+    result.first.should be_an(Article)
+    result.first.should_not be_new_record
+  end
+
 
   share_as :CreatingARecord do
     it 'should create a record' do
@@ -25,19 +67,21 @@ describe "Creating models" do
 
   describe 'Model.create' do
     before do
-      @article = Article.create(:id => new_uuid, 
-                                :title => "Datapathy is awesome!", 
+      pending
+      @article = Article.create(:id => new_uuid,
+                                :title => "Datapathy is awesome!",
                                 :text => "It just is!")
     end
 
     it_should_behave_like CreatingARecord
-    
+
   end
 
   describe 'Model.new; #save' do
     before do
-      @article = Article.new(:id => new_uuid, 
-                             :title => "Datapathy is awesome!", 
+      pending
+      @article = Article.new(:id => new_uuid,
+                             :title => "Datapathy is awesome!",
                              :text => "It just is!")
       @article.save
     end
@@ -48,6 +92,7 @@ describe "Creating models" do
 
   describe 'Bulk Model.create' do
     before do
+      pending
       @articles = Article.create([
         { :id => new_uuid, :title => "Article A", :text => "Foo"},
         { :id => new_uuid, :title => "Article B", :text => "Bar"},
@@ -60,7 +105,7 @@ describe "Creating models" do
     end
 
   end
-  
+
   after do
     test_adapter.clear!
   end

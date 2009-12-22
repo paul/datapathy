@@ -11,7 +11,7 @@ module Datapathy::Model
   extend ActiveSupport::Concern
   include ActiveModel::Validations
 
-  attr_accessor :new_record, :collection
+  attr_accessor :new_record
 
   def initialize(attributes = {})
     @attributes = {}
@@ -43,16 +43,15 @@ module Datapathy::Model
   end
 
   def create
-    adapter.create(collection)
-    @new_record = false
+    Datapathy::Collection.new(self).create
   end
 
   def update
-    collection.update(persisted_attributes)
+    Datapathy::Collection.new(self).update(persisted_attributes)
   end
 
   def delete
-    collection.delete
+    Datapathy::Collection.new(self).delete
   end
 
   def key
@@ -79,15 +78,6 @@ module Datapathy::Model
     self.class.adapter
   end
 
-  def collection
-    return @collection if @collection
-    @collection = Datapathy::Collection.new(self)
-  end
-
-  def query
-    collection.query
-  end
-
   #override the ActiveModel::Validations one, because its dumb
   def valid?
     _run_validate_callbacks if errors.empty?
@@ -96,14 +86,31 @@ module Datapathy::Model
 
   module ClassMethods
 
+    def new(*attributes)
+      if attributes.first.is_a?(Datapathy::Collection)
+        collection = attributes.shift
+        resources = attributes.map do |attrs|
+          m = model.allocate
+          m.__send__(:initialize, attrs)
+          m
+        end
+        collection = Datapathy::Collection.new(*resources)
+      else
+        collection = Datapathy::Collection.new(self, *attributes)
+      end
+
+      collection.size == 1 ? collection.first : collection
+    end
+
     def persists(*args)
       persisted_attributes.push(*args)
-      #attr_accessor *args
       args.each do |name|
+        name = name.to_s.gsub(/\?\Z/, '')
         class_eval <<-CODE
           def #{name}
             @attributes[:#{name}]
           end
+          alias #{name}? #{name}
 
           def #{name}=(val)
             @attributes[:#{name}] = val
@@ -119,18 +126,12 @@ module Datapathy::Model
     def new_from_attributes(attributes = {})
       m = allocate
       m.merge!(attributes = {})
+      m.new_record = false
       m
     end
 
-    def create(attributes)
-      attributes = [attributes] if attributes.is_a?(Hash)
-      resources = attributes.map do |attrs|
-        new(attrs)
-      end
-      adapter.create(resources)
-      resources.each { |r| r.new_record = false }
-
-      resources.size == 1 ? resources.first : resources
+    def create(*attributes)
+      Datapathy::Collection.new(self, *attributes).create
     end
 
     def [](key)

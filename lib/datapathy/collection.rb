@@ -2,39 +2,38 @@ class Datapathy::Collection
 
   attr_reader :query, :model, :adapter
 
+  # Collection.new(query)
+  # Collection.new(model, ...)
+  # Collection.new(Model, record, ...)
   def initialize(*elements)
     raise "Collection must be initialized with a Query or Model(s)." if elements.empty?
     if elements.first.is_a?(Datapathy::Query)
       query = elements.shift
-    else
+    elsif elements.first.is_a?(Datapathy::Model)
       query = Datapathy::Query.new(elements.first.model)
+    else
+      query = Datapathy::Query.new(elements.shift)
+      elements.map! { |r| query.model.new(self, r) }
     end
 
     @query, @model, @adapter = query, query.model, query.model.adapter
-    @elements = elements.map { |e| e.collection = self; e } unless elements.nil?
+    @elements = elements
   end
 
-  def new(attributes = {})
-    attributes = [attributes] if attributes.is_a?(Hash)
-    resources = attributes.map do |attrs|
-      model.new(attrs)
-    end
-
-    collection = self.class.new(query, resources)
-    resources.size == 1 ? resources.first : resources
+  def new(*attributes)
+    collection = self.class.new(self.model, *attributes)
+    collection.size == 1 ? collection.first : collection
   end
 
-  def create(attributes = {})
-    attributes = [attributes] if attributes.is_a?(Hash)
-    resources = attributes.map do |attrs|
-      model.new(attrs)
+  def create(*attributes)
+    if attributes.empty?
+      adapter.create(self)
+      each { |r| r.new_record = false }
+
+      size == 1 ? first : self
+    else
+      self.class.new(model, *attributes).create
     end
-
-    collection = self.class.new(query, resources)
-    adapter.create(collection)
-    resources.each { |r| r.new_record = false }
-
-    resources.size == 1 ? resources.first : resources
   end
 
   def detect(*attrs, &blk)
