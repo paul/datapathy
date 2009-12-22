@@ -28,11 +28,7 @@ module Datapathy::Model
   end
 
   def persisted_attributes
-    returning({}) do |attrs|
-      self.class.persisted_attributes.each do |name|
-        attrs[name] = self.send(:"#{name}")
-      end
-    end
+    @attributes
   end
 
   def merge!(attributes = {})
@@ -74,9 +70,7 @@ module Datapathy::Model
 
     def new(*attributes)
       resources = attributes.map do |attrs|
-        m = model.allocate
-        m.__send__(:initialize, attrs)
-        m
+        super(attrs)
       end
 
       collection = Datapathy::Collection.new(*resources)
@@ -87,17 +81,26 @@ module Datapathy::Model
       persisted_attributes.push(*args)
       args.each do |name|
         name = name.to_s.gsub(/\?\Z/, '')
-        class_eval <<-CODE
-          def #{name}
-            @attributes[:#{name}]
-          end
-          alias #{name}? #{name}
-
-          def #{name}=(val)
-            @attributes[:#{name}] = val
-          end
-        CODE
+        define_getter_method(name)
+        define_setter_method(name)
       end
+    end
+
+    def define_getter_method(name)
+      class_eval <<-CODE
+        def #{name}
+          @attributes[:#{name}]
+        end
+        alias #{name}? #{name}
+      CODE
+    end
+
+    def define_setter_method(name)
+      class_eval <<-CODE
+        def #{name}=(val)
+          @attributes[:#{name}] = val
+        end
+      CODE
     end
 
     def persisted_attributes
