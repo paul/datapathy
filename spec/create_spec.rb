@@ -1,48 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "Creating models" do
-  before do
-    @record_foo = {:id => new_uuid, :title => "Foo", :text => "foo"}
-    @record_bar = {:id => new_uuid, :title => "Bar", :text => "bar"}
-  end
-
-  it "should create one at a time" do
-    result = Article.create(@record_foo)
-
-    result.should be_an(Article)
-    result.should_not be_new_record
-  end
-
-  it "should create many" do
-    result = Article.create(@record_foo, @record_bar)
-
-    result.should be_a(Collection)
-    result.first.should be_an(Article)
-    result.first.should_not be_new_record
-  end
-
-  it "should create a record in an existing collection of one" do
-    result = Article.new(@record_foo).create
-
-    result.should be_an(Article)
-    result.should_not be_new_record
-  end
-
-  it "should create one through a collection" do
-    result = Article.all.create(@record_foo)
-
-    result.should be_an(Article)
-    result.should_not be_new_record
-  end
-
-  it "should create many through a collection" do
-    result = Article.all.create(@record_foo, @record_bar)
-
-    result.should be_a(Collection)
-    result.first.should be_an(Article)
-    result.first.should_not be_new_record
-  end
-
 
   share_as :CreatingARecord do
     it 'should create a record' do

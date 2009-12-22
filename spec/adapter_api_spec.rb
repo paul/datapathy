@@ -68,7 +68,7 @@ describe 'Adapter API' do
 
     describe "with loaded collection (update already retrived records)" do
       before do
-        @collection = @article.collection
+        @collection = Datapathy::Collection.new(@article)
         @collection.should be_loaded
         @results = @adapter.update({:title => "Boo"}, @collection)
         @result = @results.first
@@ -111,7 +111,7 @@ describe 'Adapter API' do
 
     describe "with loaded collection (delete already retrived records)" do
       before do
-        @collection = @article.collection
+        @collection = Datapathy::Collection.new(@article)
         @collection.should be_loaded
         @results = @adapter.delete(@collection)
         @result = @results.first
