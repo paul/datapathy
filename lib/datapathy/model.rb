@@ -69,6 +69,7 @@ module Datapathy::Model
   module ClassMethods
 
     def new(*attributes)
+      attributes = [{}] if attributes.empty?
       resources = attributes.map do |attrs|
         super(attrs)
       end

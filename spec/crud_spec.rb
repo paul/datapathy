@@ -31,6 +31,13 @@ describe "CRUD API" do
       it { @result.should be_new_record }
     end
 
+    describe "Model.new()" do
+      before do
+        @result = Article.new()
+      end
+      it_should_behave_like NewArticle
+    end
+
     describe "Model.new({})" do
       before do
         @result = Article.new(@record_foo)
@@ -43,6 +50,13 @@ describe "CRUD API" do
         @result = Article.new(@record_foo, @record_bar)
       end
       it_should_behave_like NewCollection
+    end
+
+    describe "collection.new()" do
+      before do
+        @result = Article.all.new()
+      end
+      it_should_behave_like NewArticle
     end
 
     describe "collection.new({})" do
