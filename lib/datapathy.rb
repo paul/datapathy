@@ -13,6 +13,12 @@ module Datapathy
     VERSION
   end
 
+  def self.adapters
+    @adapters ||= {
+      :default => default_adapter
+    }
+  end
+
   def self.default_adapter
     @adapter ||= Datapathy::Adapters::MemoryAdapter.new
   end
