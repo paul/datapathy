@@ -1,6 +1,4 @@
 
-require 'uuidtools'
-
 # only require the parts of activesupport we want
 require 'active_support/core_ext/object/returning'
 require 'active_support/inflector'
