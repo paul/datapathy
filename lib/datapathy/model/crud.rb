@@ -29,8 +29,8 @@ module Datapathy::Model
         Datapathy::Collection.new(self, *attributes).create
       end
 
-      def [](key)
-        detect(self.key => key) || raise(Datapathy::RecordNotFound, "No #{model} found with #{self.key} `#{key}`")
+      def [](value)
+        detect(key => value) || raise(Datapathy::RecordNotFound, "No #{model} found with #{key} `#{value}`")
       end
 
       def select(*attrs, &blk)
