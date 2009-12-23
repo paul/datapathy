@@ -8,7 +8,7 @@ require 'active_support/core_ext/string/inflections'
 
 module Datapathy
 
-  VERSION = "0.1.0"
+  VERSION = "0.5.0"
   def self.version
     VERSION
   end
