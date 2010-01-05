@@ -12,13 +12,12 @@ class Datapathy::Collection
       query = Datapathy::Query.new(elements.first.model)
     elsif elements.first.ancestors.include?(Datapathy::Model)
       query = Datapathy::Query.new(elements.shift)
-      elements = Array.wrap(query.model.new(*elements))
     else
       raise "First element must be a query, model, or Model class"
     end
 
     @query, @model, @adapter = query, query.model, query.model.adapter
-    @elements = elements
+    @elements = elements.first.is_a?(Hash) ? Array.wrap(query.model.new(*elements)) : elements
   end
 
   def new(*attributes)
@@ -33,7 +32,7 @@ class Datapathy::Collection
 
       size == 1 ? first : self
     else
-      self.class.new(model, *attributes).create
+      self.class.new(query, *attributes).create
     end
   end
 

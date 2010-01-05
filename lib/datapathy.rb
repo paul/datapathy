@@ -13,16 +13,12 @@ module Datapathy
 
   def self.adapters
     @adapters ||= {
-      :default => default_adapter
+      :default => Datapathy::Adapters::MemoryAdapter.new
     }
   end
 
   def self.default_adapter
-    @adapter ||= Datapathy::Adapters::MemoryAdapter.new
-  end
-
-  def self.default_adapter=(adapter)
-    @adapter = adapter
+    @adapters[:default]
   end
 
   class RecordNotFound < StandardError
