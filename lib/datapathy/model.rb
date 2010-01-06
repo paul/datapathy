@@ -128,7 +128,7 @@ module Datapathy::Model
     end
 
     def model_name
-      ActiveModel::Name.new(self, self.to_s)
+      ActiveModel::Name.new(self)
     end
 
   end
