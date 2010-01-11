@@ -17,7 +17,7 @@ module Datapathy::Model
     end
 
     def update
-      Datapathy::Collection.new(self).update(persisted_attributes)
+      Datapathy::Collection.new(self).update(persisted_attributes).first
     end
 
     def delete
