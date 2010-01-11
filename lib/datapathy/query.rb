@@ -44,6 +44,7 @@ class Datapathy::Query
   end
 
   def initialize_resources(records)
+    return records if records.first.is_a?(Datapathy::Model)
     records.map { |record|
       resource = model.new(record)
       resource.new_record = false
