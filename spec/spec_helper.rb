@@ -1,6 +1,9 @@
 require 'rubygems'
 require 'spec'
 
+# use relative AS if its available
+$LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__), '../../rails/activesupport/lib')))
+
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'datapathy'

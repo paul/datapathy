@@ -1,8 +1,6 @@
 require 'rubygems'
 require 'rake'
 
-require 'lib/datapathy'
-
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
@@ -11,7 +9,7 @@ begin
     gem.email = "psadauskas@gmail.com"
     gem.homepage = "http://github.com/paul/datapathy"
     gem.authors = ["Paul Sadauskas"]
-    gem.version = Datapathy.version
+    gem.version = "0.5.0"
 
     gem.add_dependency "activesupport", "~> 3.0.pre"
     gem.add_dependency "activemodel", "~> 3.0.pre"
@@ -39,12 +37,4 @@ end
 task :default => :spec
 
 task :gem => :build
-
-require 'rake/rdoctask'
-Rake::RDocTask.new do |rdoc|
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "datapathy #{Datapathy.version}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
-end
 
