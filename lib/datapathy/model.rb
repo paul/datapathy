@@ -12,6 +12,8 @@ require 'datapathy/model/dynamic_finders'
 
 module Datapathy::Model
   extend ActiveSupport::Concern
+  extend ActiveModel::Naming
+
   include ActiveModel::Validations
 
   include Datapathy::Model::Crud
@@ -125,10 +127,6 @@ module Datapathy::Model
 
     def model
       self
-    end
-
-    def model_name
-      ActiveModel::Name.new(self)
     end
 
   end
