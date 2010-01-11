@@ -21,19 +21,7 @@ class Datapathy::Collection
   end
 
   def new(*attributes)
-    collection = self.class.new(self.model, *attributes)
-    collection.size == 1 ? collection.first : collection
-  end
-
-  def create(*attributes)
-    if attributes.empty?
-      adapter.create(self)
-      each { |r| r.new_record = false }
-
-      size == 1 ? first : self
-    else
-      self.class.new(query, *attributes).create
-    end
+    self.model.new(*attributes)
   end
 
   def detect(*attrs, &blk)
@@ -62,6 +50,16 @@ class Datapathy::Collection
     end
 
     query.limit(count, offset)
+  end
+
+  def create(*attributes)
+    if attributes.empty?
+      adapter.create(self)
+      each { |r| r.new_record = false }
+      size == 1 ? first : self
+    else
+      self.class.new(query, *attributes).create
+    end
   end
 
   def update(attributes = {}, &blk)

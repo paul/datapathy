@@ -18,7 +18,7 @@ module Datapathy
   end
 
   def self.default_adapter
-    @adapters[:default]
+    adapters[:default]
   end
 
   class RecordNotFound < StandardError

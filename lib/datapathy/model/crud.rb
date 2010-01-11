@@ -21,12 +21,12 @@ module Datapathy::Model
     end
 
     def delete
-      Datapathy::Collection.new(self).delete
+      Datapathy::Collection.new(self).delete.first
     end
 
     module ClassMethods
       def create(*attributes)
-        Datapathy::Collection.new(self, *attributes).create
+        collection = Datapathy::Collection.new(self, *attributes).create
       end
 
       def [](value)
