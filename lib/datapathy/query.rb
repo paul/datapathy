@@ -31,7 +31,7 @@ class Datapathy::Query
 
   def key_lookup?
     @conditions.size == 1 &&
-      @conditions.first.operation == model.key &&
+      (@conditions.first.operation == :key || @conditions.first.operation == model.key) &&
       @conditions.first.then.operation == :==
   end
 

@@ -30,7 +30,7 @@ module Datapathy::Model
       end
 
       def [](value)
-        detect(key => value) || raise(Datapathy::RecordNotFound, "No #{model} found with #{key} `#{value}`")
+        detect{ |m| m.key == value} || raise(Datapathy::RecordNotFound, "No #{model} found with #{key} `#{value}`")
       end
 
       def select(*attrs, &blk)

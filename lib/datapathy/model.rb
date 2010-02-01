@@ -23,14 +23,18 @@ module Datapathy::Model
 
   def initialize(attributes = {})
     @attributes = {}
-    attributes.each do |name, value|
-      send(:"#{name}=", value)
-    end
+    merge(attributes)
     @new_record = true
   end
 
   def persisted_attributes
     @attributes
+  end
+
+  def merge(attributes = {})
+    attributes.each do |name, value|
+      send(:"#{name}=", value)
+    end
   end
 
   def merge!(attributes = {})
