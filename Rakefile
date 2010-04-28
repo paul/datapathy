@@ -11,8 +11,8 @@ begin
     gem.authors = ["Paul Sadauskas"]
     gem.version = "0.5.0"
 
-    gem.add_dependency "activesupport", "~> 3.0.pre"
-    gem.add_dependency "activemodel", "~> 3.0.pre"
+    gem.add_dependency "activesupport", "~> 3.0.0"
+    gem.add_dependency "activemodel", "~> 3.0.0"
     gem.add_development_dependency "uuidtools", "~> 2.0"
     gem.add_development_dependency "rspec"
   end
