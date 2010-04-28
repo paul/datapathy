@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Paul Sadauskas"]
-  s.date = %q{2009-12-23}
+  s.date = %q{2010-04-28}
   s.email = %q{psadauskas@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -55,7 +55,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/paul/datapathy}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{The stupid-simple ORM}
   s.test_files = [
     "spec/query_spec.rb",
@@ -79,15 +79,21 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<activesupport>, ["~> 3.0.pre"])
-      s.add_runtime_dependency(%q<uuidtools>, ["~> 2.0"])
+      s.add_runtime_dependency(%q<activesupport>, ["~> 3.0.0"])
+      s.add_runtime_dependency(%q<activemodel>, ["~> 3.0.0"])
+      s.add_development_dependency(%q<uuidtools>, ["~> 2.0"])
+      s.add_development_dependency(%q<rspec>, [">= 0"])
     else
-      s.add_dependency(%q<activesupport>, ["~> 3.0.pre"])
+      s.add_dependency(%q<activesupport>, ["~> 3.0.0"])
+      s.add_dependency(%q<activemodel>, ["~> 3.0.0"])
       s.add_dependency(%q<uuidtools>, ["~> 2.0"])
+      s.add_dependency(%q<rspec>, [">= 0"])
     end
   else
-    s.add_dependency(%q<activesupport>, ["~> 3.0.pre"])
+    s.add_dependency(%q<activesupport>, ["~> 3.0.0"])
+    s.add_dependency(%q<activemodel>, ["~> 3.0.0"])
     s.add_dependency(%q<uuidtools>, ["~> 2.0"])
+    s.add_dependency(%q<rspec>, [">= 0"])
   end
 end
 
