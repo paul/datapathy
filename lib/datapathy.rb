@@ -28,9 +28,11 @@ end
 $:.unshift(File.expand_path(File.dirname(__FILE__))) unless
     $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
+require 'datapathy/log_subscriber'
 require 'datapathy/model'
 require 'datapathy/query'
 require 'datapathy/collection'
 require 'datapathy/adapters/abstract_adapter'
 require 'datapathy/adapters/memory_adapter'
 
+require 'datapathy/railtie'

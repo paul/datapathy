@@ -4,12 +4,13 @@ require 'active_support/core_ext/module/delegation'
 class Datapathy::Query
 
   attr_reader :model, :conditions,
-              :offset, :count
+              :offset, :count, :instrumenter
 
   def initialize(model, conditions = {}, &blk)
     @model = model
     @conditions = ConditionSet.new
     @blocks = []
+    @instrumenter = ActiveSupport::Notifications.instrumenter
     add(conditions, &blk)
   end
 
