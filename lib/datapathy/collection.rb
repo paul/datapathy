@@ -94,7 +94,7 @@ class Datapathy::Collection
   end
 
   def load!
-    query.instrumenter.instrument('query.datapathy', :name => model.to_s) do
+    query.instrumenter.instrument('query.datapathy', :name => model.to_s, :query => query.to_s) do
       @elements = query.initialize_and_filter(adapter.read(self))
     end
   end

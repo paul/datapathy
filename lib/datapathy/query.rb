@@ -82,6 +82,15 @@ class Datapathy::Query
     @count, @offset = count, offset
   end
 
+  def to_s
+    string = ""
+    string << @conditions.inspect
+    string << " limit #{@limit}" if @limit
+    string << " offset #{@offset}" if @offset && @offset > 0
+    string
+  end
+
+
   class ConditionSet < ActiveSupport::BasicObject
 
     delegate :size, :first, :to => :@conditions
@@ -122,7 +131,10 @@ class Datapathy::Query
     end
 
     def inspect
-      "#{operation}(#{@arguments.inspect unless @arguments.nil?})#{".#{@then.inspect}" if @then}"
+      string = operation.to_s
+      string << "#{@arguments.inspect}" unless @arguments.nil?
+      string << ".#{@then.inspect}" if @then
+      string
     end
 
   end
