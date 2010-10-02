@@ -14,6 +14,8 @@ module Datapathy::Model
   extend ActiveSupport::Concern
   extend ActiveModel::Naming
 
+  include ActiveModel::Conversion
+
   include ActiveModel::Validations
 
   include Datapathy::Model::Crud
