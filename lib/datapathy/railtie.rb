@@ -36,7 +36,7 @@ module Datapathy
       module ClassMethods
         def log_process_action(payload)
           messages, query_runtime = super, payload[:query_runtime]
-          messages << ("Datapathy Query: %.1fms" % query_runtime.to_f) if query_runtime
+          messages << ("Datapathy: %.1fms" % query_runtime.to_f) if query_runtime
           messages
         end
       end

@@ -105,7 +105,6 @@ class Datapathy::Query
       condition
     end
 
-
     def inspect
       @conditions.inspect
     end
@@ -133,7 +132,7 @@ class Datapathy::Query
     def inspect
       string = operation.to_s
       string << "#{@arguments.inspect}" unless @arguments.nil?
-      string << ".#{@then.inspect}" if @then
+      string << " #{@then.inspect}" if @then
       string
     end
 

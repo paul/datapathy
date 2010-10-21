@@ -53,23 +53,29 @@ class Datapathy::Collection
   end
 
   def create(*attributes)
-    if attributes.empty?
-      adapter.create(self)
-      each { |r| r.new_record = false }
-      size == 1 ? first : self
-    else
-      self.class.new(query, *attributes).create
+    query.instrumenter.instrument('query.datapathy', :name => "Create #{model.to_s}", :query => attributes.inspect) do
+      if attributes.empty?
+        adapter.create(self)
+        each { |r| r.new_record = false }
+        size == 1 ? first : self
+      else
+        self.class.new(query, *attributes).create
+      end
     end
   end
 
   def update(attributes = {}, &blk)
     query.add(&blk)
-    @elements = query.initialize_resources(adapter.update(attributes, self))
+    query.instrumenter.instrument('query.datapathy', :name => "Update #{model.to_s}", :query => attributes.inspect) do
+      @elements = query.initialize_resources(adapter.update(attributes, self))
+    end
   end
 
   def delete(&blk)
     query.add(&blk)
-    @elements = query.initialize_resources(adapter.delete(self))
+    query.instrumenter.instrument('query.datapathy', :name => "Delete #{model.to_s}", :query => query.to_s) do
+      @elements = query.initialize_resources(adapter.delete(self))
+    end
   end
 
   def loaded?
@@ -94,7 +100,7 @@ class Datapathy::Collection
   end
 
   def load!
-    query.instrumenter.instrument('query.datapathy', :name => model.to_s, :query => query.to_s) do
+    query.instrumenter.instrument('query.datapathy', :name => "Read #{model.to_s}", :query => query.to_s) do
       @elements = query.initialize_and_filter(adapter.read(self))
     end
   end
