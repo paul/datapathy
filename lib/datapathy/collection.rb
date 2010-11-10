@@ -105,4 +105,19 @@ class Datapathy::Collection
     end
   end
 
+  def to_sql(formatter = nil)
+    if any?
+      "(" + collect { |e| e.to_sql(formatter) }.join(', ') + ")"
+    else
+      "(NULL)"
+    end
+  end
+
+  def equality_predicate_sql
+    "IN"
+  end
+
+  def inequality_predicate_sql
+    "NOT IN"
+  end
 end
