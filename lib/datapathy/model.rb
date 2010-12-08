@@ -35,7 +35,8 @@ module Datapathy::Model
 
   def merge(attributes = {})
     attributes.each do |name, value|
-      send(:"#{name}=", value)
+      method = :"#{name}="
+      send(method, value) if respond_to?(method)
     end
   end
 
