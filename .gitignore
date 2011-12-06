@@ -4,4 +4,4 @@ coverage
 rdoc
 pkg
 benchmark.db
-
+Gemfile.lock
