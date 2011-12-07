@@ -4,24 +4,26 @@ require 'active_support/inflector'
 require 'active_support/core_ext/string/inflections'
 
 module Datapathy
+  extend self
+
+  attr_accessor :services_uri
 
   VERSION = "0.5.0"
-  def self.version
+  def version
     VERSION
   end
 
-  def self.adapters
-    @adapters ||= {
-      :default => Datapathy::Adapters::MemoryAdapter.new
-    }
+  def adapter
+    @adapter ||= Datapathy::Adapters::HttpAdapter.new(:services_uri => services_uri)
   end
 
-  def self.default_adapter
-    adapters[:default]
+  def configure
+    block_given? ? yield(self) : self
   end
 
   class RecordNotFound < StandardError
   end
+
 
 end
 
@@ -29,8 +31,6 @@ require 'datapathy/log_subscriber'
 require 'datapathy/model'
 require 'datapathy/query'
 require 'datapathy/collection'
-require 'datapathy/adapters/abstract_adapter'
-require 'datapathy/adapters/memory_adapter'
 require 'datapathy/adapters/http_adapter'
 
 require 'datapathy/models/service'

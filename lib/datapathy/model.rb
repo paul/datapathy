@@ -125,11 +125,11 @@ module Datapathy::Model
     end
 
     def key
-      :id
+      :href
     end
 
     def adapter
-      @adapter || Datapathy.default_adapter
+      Datapathy.adapter
     end
 
     def model

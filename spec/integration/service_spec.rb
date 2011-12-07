@@ -2,8 +2,9 @@ require 'spec_helper'
 
 describe "top-level service" do
   before do
-    Datapathy.adapters[:http] = Datapathy::Adapters::HttpAdapter.new(:services_uri => "http://datapathy.dev/")
-    Datapathy.adapters[:default] = Datapathy.adapters[:http]
+    Datapathy.configure do |config|
+      config.services_uri = "http://datapathy.dev/"
+    end
 
     Artifice.activate_with(DatapathyTestApp)
   end
