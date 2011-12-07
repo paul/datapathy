@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency     "activesupport", "> 3.1.0"
   s.add_runtime_dependency     "activemodel",   "> 3.1.0"
   s.add_runtime_dependency     "resourceful"
+  s.add_runtime_dependency     "yajl-ruby"
 
   s.add_development_dependency "uuidtools"
   s.add_development_dependency "rspec"

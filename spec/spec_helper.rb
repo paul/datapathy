@@ -1,14 +1,11 @@
-require 'rubygems'
-require 'spec'
-
-# use relative AS if its available
-$LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__), '../../rails/activesupport/lib')))
+require 'rspec'
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'datapathy'
 
 require 'pp'
+require 'artifice'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
@@ -25,7 +22,7 @@ module Helpers
   end
 end
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
 
   config.include(Helpers)
   config.include(Matchers)
