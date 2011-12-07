@@ -76,6 +76,7 @@ module Datapathy::Model
   end
 
   module ClassMethods
+    attr_accessor :service_name, :service_uri
 
     def new(*attributes)
       attributes = [{}] if attributes.empty?

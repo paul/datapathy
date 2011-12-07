@@ -1,3 +1,10 @@
+class Post
+  include Datapathy::Model
+  self.service_name = "Posts"
+
+  persists :title
+
+end
 
 class Article
   include Datapathy::Model

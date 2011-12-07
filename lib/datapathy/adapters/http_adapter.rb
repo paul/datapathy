@@ -4,17 +4,16 @@ require 'active_support/core_ext/hash/keys'
 
 module Datapathy::Adapters
 
-  class HttpAdapter < Datapathy::Adapters::AbstractAdapter
+  class HttpAdapter
 
     attr_reader :http, :services_uri
 
     def initialize(options = {})
-      super
 
-      @services_uri = @options[:services_uri]
+      @services_uri = Addressable::URI.parse(options[:services_uri])
 
       @http = Resourceful::HttpAccessor.new
-      @http.logger = @options[:logger] if @options[:logger]
+      @http.logger = options[:logger] if options[:logger]
       @http.cache_manager = Resourceful::InMemoryCacheManager.new
       #@http.add_authenticator Resourceful::LSAuthenticator.new(@username, @password) # Add a custom authenticator
     end
@@ -47,8 +46,10 @@ module Datapathy::Adapters
         response = http.resource(query.key, default_headers).get
         Array.wrap(deserialize(response))
       else
-        response = http_resource_for(query).get
-        records = deserialize(response)[:items]
+        resource = http_resource_for(query)
+        collection.href = resource.uri.to_s
+        response = resource.get
+        records = deserialize(response)[:members]
         records.map! { |r| r.symbolize_keys! }
         records
       end
@@ -91,12 +92,20 @@ module Datapathy::Adapters
               location
             elsif model == Service
               services_uri
-            else
-              service = Service[model.service_type]
+            elsif model.service_uri
+              model.service_uri
+            elsif model.service_name
+              service = Service[model.service_name]
               service.href
+            else
+              raise "I don't know how to look up #{model}. Please set service_name or service_uri."
             end
 
       raise "Could not identify a location to look for #{model}" unless url
+
+      # Figure out relative urls
+      url = Addressable::URI.parse(url) unless url.is_a?(Addressable::URI)
+      url = url.relative? ? services_uri.join(url) : url
 
       http.resource(url, default_headers)
     end
