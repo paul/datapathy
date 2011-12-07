@@ -5,3 +5,4 @@ rdoc
 pkg
 benchmark.db
 Gemfile.lock
+*.gem
