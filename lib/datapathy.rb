@@ -8,7 +8,7 @@ module Datapathy
 
   attr_accessor :services_uri
 
-  VERSION = "0.5.0"
+  VERSION = "0.6.0"
   def version
     VERSION
   end
@@ -23,7 +23,6 @@ module Datapathy
 
   class RecordNotFound < StandardError
   end
-
 
 end
 
