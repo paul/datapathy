@@ -1,14 +1,29 @@
 datapathy
 =========
 
-The stupid-simple ORM
+The stupid-simple ORM as an HTTP client.
 
-Roadmap
-=======
+Examples
+========
 
- * 0.1.0 - CRUD API in adapters & models completed
- * 0.2.0 - Lazy Collections
- * 0.3.0 - Validations & Errors
+    class Post
+      include Datapathy::Model
+
+      # Using service discovery
+      self.service_name = "AllPosts"
+      # Using manual URLs. Boo.
+      self.service_href = "http://example.com/posts{?author_href,q}
+
+      persists :title, :body, :author_href, :comments_href
+
+      links :author
+      links :comments
+
+    end
+
+    Post.href  #=> "http://example.com/posts"
+    Post.select { |p| p.author = author }.href
+    # => "http://example.com/posts?author_href=http://example.com/authors/1"
 
 
 
@@ -16,4 +31,4 @@ Roadmap
 Copyright
 =========
 
-Copyright (c) 2009 Paul Sadauskas. See LICENSE for details.
+Copyright (c) 2011 Paul Sadauskas. See LICENSE for details.

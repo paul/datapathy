@@ -18,5 +18,11 @@ describe "top-level service" do
     services.size.should == 2
   end
 
+  describe "Discovery" do
+
+    it "should discover the href" do
+      Post.href.should == "/posts"
+    end
+  end
 end
 

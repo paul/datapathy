@@ -13,7 +13,8 @@ class DatapathyTestApp < Sinatra::Base
       :href => '/services',
       :members => [
         { :name => "Services", :href => '/services' },
-        { :name => "Posts",    :href => '/posts'    }
+        { :name => "Posts",    :href => '/posts'    },
+        { :name => "Comments", :href => '/comments{?author_href,date}' }
       ]
     })
   end
@@ -35,6 +36,17 @@ class DatapathyTestApp < Sinatra::Base
       :href => '/my_posts',
       :members => [
         {:href => '/my_posts/1', :title => 'Non-standard resource'}
+      ]
+    })
+  end
+
+  get "/comments" do # Test uri templated query params
+    headers "Content-Type" => "application/json"
+    json({
+      :href => "/comments",
+      :query => params,
+      :members => [
+        {:href => '/comments/1', :title => 'Buy Viagra Now!!!'}
       ]
     })
   end

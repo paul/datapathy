@@ -6,6 +6,13 @@ class Post
 
 end
 
+class Comments
+  include Datapathy::Model
+  self.service_name = "Comments"
+
+  persists :content
+end
+
 class Article
   include Datapathy::Model
 
@@ -28,5 +35,4 @@ class Person
   persists :id, :name
 
   validates_presence_of :name
-
 end
