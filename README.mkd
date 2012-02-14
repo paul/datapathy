@@ -12,7 +12,7 @@ Examples
       # Using service discovery
       self.service_name = "AllPosts"
       # Using manual URLs. Boo.
-      self.service_href = "http://example.com/posts{?author_href,q}
+      self.service_href = "http://example.com/posts{?author_href,q}"
 
       persists :title, :body, :author_href, :comments_href
 
